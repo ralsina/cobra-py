@@ -1,7 +1,7 @@
 import pyglet
 from PIL import Image, ImageDraw
 from typing import Optional
-from queue import Queue
+from queue import Queue, Empty
 import threading
 from functools import partial
 
@@ -42,12 +42,15 @@ class Screen:
                 )
 
     def process_events(self, _):
-        command, a, kw = self.command_queue.get()
-        getattr(self, command)(*a, **kw)
-        self.command_queue.task_done()
+        try:
+            while True:
+                command, a, kw = self.command_queue.get(False)
+                getattr(self, command)(*a, **kw)
+                self.command_queue.task_done()
+        except Empty:
+            pass
 
     def print_at(self, x: int = 0, y: int = 0, text: str = ""):
-        print("PRINTING: ", text)
         for i, c in enumerate(text):
             self._screen[x + i % 80][y].text = c
 
@@ -77,7 +80,6 @@ ellipse = partial(command, "ellipse")
 def prompt():
     while True:
         cmd = input("> ")
-        print("=>>", repr(cmd))
         if cmd:
             eval(cmd)
 
