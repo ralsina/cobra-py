@@ -138,3 +138,7 @@ dmypy.json
 cython_debug/
 .vscode/
 .venv
+
+# cffi leftovers
+cobra_py/raylib.c
+cobra_py/raylib.o
