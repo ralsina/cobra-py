@@ -35,3 +35,5 @@ while not rl.window_should_close():
 # Actually you can still use CamelCase, be free
 rl.CloseWindow()
 ```
+
+<img src="https://i.imgur.com/54SSJqp.png">
