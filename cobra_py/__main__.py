@@ -1,7 +1,7 @@
-import threading
 from functools import partial
+from multiprocessing import Process, Queue
 from pathlib import Path
-from queue import Empty, Queue
+from queue import Empty
 from typing import Tuple
 
 from cobra_py import rl
@@ -44,19 +44,19 @@ class Screen:
 
     def event_loop(self):
         rl.begin_drawing()
-        rl.clear_background(rl.RAYWHITE)
+        # Draw graphics buffer
+        rl.draw_texture(self._buffer_texture, 0, 0, rl.WHITE)
         # Draw text mode screen
         for y, row in enumerate(self._screen):
+            text = b"".join(row)
             rl.draw_text_ex(
                 font,
-                b"".join(row),
+                text,
                 (0, y * text_size.y),
                 font.baseSize,
                 0,
                 rl.RED,
             )
-        # Draw graphics buffer
-        rl.draw_texture(self._buffer_texture, 0, 0, rl.WHITE)
         rl.draw_fps(10, 10)
         rl.end_drawing()
 
@@ -71,7 +71,7 @@ class Screen:
 
     def print_at(self, x: int = 0, y: int = 0, text: str = ""):
         for i, c in enumerate(text):
-            self._screen[x + i % 80][y] = c.encode("utf-8")
+            self._screen[y][x + i % 80] = c.encode("utf-8")
 
     def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
         rl.image_draw_circle(ffi.addressof(self._buffer), x, y, radius, color)
@@ -96,10 +96,11 @@ def prompt():
             eval(cmd)
 
 
-x = threading.Thread(target=prompt)
-x.start()
+x = Process(target=prompt)
+# x.start()
 
 screen.circle(100, 100, 50, rl.RED)
+screen.print_at(10, 10, "FOOBAR")
 
 while not rl.window_should_close():
     screen.process_commands()

@@ -229,6 +229,17 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
+name = "pyte"
+version = "0.8.0"
+description = "Simple VTXXX-compatible terminal emulator."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+wcwidth = "*"
+
+[[package]]
 name = "pyyaml"
 version = "5.3.1"
 description = "YAML parser and emitter for Python"
@@ -296,6 +307,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "wcwidth"
+version = "0.2.5"
+description = "Measures the displayed width of unicode strings in a terminal"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "wrapt"
 version = "1.12.1"
 description = "Module for decorators, wrappers and monkey patching."
@@ -306,7 +325,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "2c629f3793b5a951a5d241655bd99223f4af4dbfbc455a42dfe1cd4f88557525"
+content-hash = "11efdd55970f4ac6ccac70e40eb13d836cbc981346c790896e0a8d24ae112499"
 
 [metadata.files]
 appdirs = [
@@ -474,6 +493,9 @@ pylint = [
     {file = "pylint-2.6.0-py3-none-any.whl", hash = "sha256:bfe68f020f8a0fece830a22dd4d5dddb4ecc6137db04face4c3420a46a52239f"},
     {file = "pylint-2.6.0.tar.gz", hash = "sha256:bb4a908c9dadbc3aac18860550e870f58e1a02c9f2c204fdf5693d73be061210"},
 ]
+pyte = [
+    {file = "pyte-0.8.0.tar.gz", hash = "sha256:7e71d03e972d6f262cbe8704ff70039855f05ee6f7ad9d7129df9c977b5a88c5"},
+]
 pyyaml = [
     {file = "PyYAML-5.3.1-cp27-cp27m-win32.whl", hash = "sha256:74809a57b329d6cc0fdccee6318f44b9b8649961fa73144a98735b0aaf029f1f"},
     {file = "PyYAML-5.3.1-cp27-cp27m-win_amd64.whl", hash = "sha256:240097ff019d7c70a4922b6869d8a86407758333f02203e0fc6ff79c5dcede76"},
@@ -551,6 +573,10 @@ typing-extensions = [
 ]
 vecrec = [
     {file = "vecrec-0.3.0.tar.gz", hash = "sha256:7781b900a02ad4def8a53cd3bb96cd15d65bbde420503863bb3c2e4fbaaf36be"},
+]
+wcwidth = [
+    {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
+    {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},

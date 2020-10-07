@@ -30,5 +30,5 @@ def bind_raylib(c):
 @task
 def check(c):
     print("Formatting")
-    c.run("isort .")
+    c.run("isort --recursive .")
     c.run("black .")
