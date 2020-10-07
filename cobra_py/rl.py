@@ -1,9 +1,10 @@
 """A wrapper to the raylib CFFI binding so that names are snake_case instead of CamelCase"""
 
-import cobra_py.raylib.lib as rl
 import inspect
 import re
 from types import BuiltinFunctionType
+
+import cobra_py.raylib.lib as rl
 
 
 def camel_to_snake(name):
