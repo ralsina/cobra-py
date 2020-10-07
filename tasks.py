@@ -1,5 +1,6 @@
-import cffi
 import pathlib
+
+import cffi
 from invoke import task
 
 
@@ -18,3 +19,10 @@ def bind_raylib(c):
         extra_link_args=["-Wl,-rpath,."],
     )
     ffi.compile()
+
+
+@task
+def check(c):
+    print("Formatting")
+    c.run("isort .")
+    c.run("black .")
