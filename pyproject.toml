@@ -4,12 +4,10 @@ version = "0.0.2"
 description = "An 80s style Python runtime and development environment"
 authors = ["Roberto Alsina <roberto.alsina@gmail.com>"]
 license = "MIT"
+include = ["examples/*", "README.md", "tasks.py", "raylib.patch", "include/*"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyglet = "^1.5.7"
-pillow = "^7.2.0"
-glooey = "^0.3.4"
 pyte = "^0.8.0"
 ipcqueue = "^0.9.6"
 
