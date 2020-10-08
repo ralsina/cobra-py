@@ -1,5 +1,5 @@
-import pathlib
 import os
+import pathlib
 
 import cffi
 from invoke import task
@@ -14,6 +14,7 @@ def checkout_raylib(c):
         c.run("git checkout 3.0.0")
         c.run("patch -p1 < ../raylib.patch")
 
+
 @task
 def build_raylib(c):
     with c.cd("raylib/src"):
@@ -26,6 +27,7 @@ def check(c):
     print("Formatting")
     c.run("isort --recursive .")
     c.run("black .")
+
 
 @task(build_raylib)
 def bind_raylib(c):
@@ -50,4 +52,3 @@ def bind_raylib(c):
         include_dirs=[includes, lib_dir],
     )
     ffi.compile()
-

@@ -8,14 +8,14 @@ from pathlib import Path
 
 import pyte
 
-import glfw
 from cobra_py import rl
 from cobra_py.raylib import ffi
 
 sw = 800
 sh = 450
 
-window = rl.init_window(sw, sh, b"CobraPy Terminal!")
+
+rl.init_window(sw, sh, b"CobraPy Terminal!")
 font_path = str(
     Path(rl.__file__).parent / "resources" / "fonts" / "Kepler-452b.ttf"
 ).encode("utf-8")
@@ -39,6 +39,19 @@ if p_pid == 0:  # Child process
     )
 
 p_out = os.fdopen(master_fd, "w+b", 0)
+
+
+@ffi.callback("void(int,int,int,int)")
+def key_event(key, scancode, action, mods):
+    print("scancode=>", key, scancode, action)
+    if mods == 1:  # Key release
+        return
+    if action == 36:
+        p_out.write(b"\n")
+
+
+rl.set_key_callback(key_event)
+
 
 while not rl.window_should_close():
     key = rl.get_key_pressed()
@@ -68,5 +81,5 @@ while not rl.window_should_close():
             0,
             rl.RED,
         )
-    rl.draw_fps(10, 10)
+    # rl.draw_fps(10, 10)
     rl.end_drawing()
