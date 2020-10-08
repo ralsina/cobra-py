@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# This is literally the pygame hello world example.
 
 import os
 import pty
@@ -61,7 +60,7 @@ colors = {
     "brown": rl.BROWN,
     "blue": rl.BLUE,
     "magenta": rl.MAGENTA,
-    "cyan": rl.SKYBLUE,
+    "cyan": (0,255,255,255),
     "white": rl.WHITE,
 }
 
