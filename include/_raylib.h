@@ -1642,3 +1642,5 @@ void GuiSetIconData(int iconId, unsigned int *data);  // Set icon bit data
 void GuiSetIconPixel(int iconId, int x, int y);       // Set icon pixel value
 void GuiClearIconPixel(int iconId, int x, int y);     // Clear icon pixel value
 bool GuiCheckIconPixel(int iconId, int x, int y);     // Check icon pixel value
+
+void SetKeyCallback(void(*f)(int, int, int, int));
