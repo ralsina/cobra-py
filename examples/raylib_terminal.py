@@ -164,5 +164,5 @@ while not rl.window_should_close():
         int(text_size.y),
         (100, 108, 100, 100),
     )
-    rl.draw_fps(400, 50)
+    rl.draw_fps(850, 10)
     rl.end_drawing()

@@ -56,7 +56,7 @@ typing-extensions = ">=3.7.4"
 name = "cffi"
 version = "1.14.3"
 description = "Foreign Function Interface for Python calling C code."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -119,6 +119,17 @@ description = "Pythonic task execution"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "ipcqueue"
+version = "0.9.6"
+description = "Ipcqueue provides POSIX and SYS V message queues functionality to exchange data among processes."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cffi = ">=1"
 
 [[package]]
 name = "isort"
@@ -209,7 +220,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pycparser"
 version = "2.20"
 description = "C parser in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -341,7 +352,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.8"
-content-hash = "08e1273bd7b5036c7fa2b68bf7ed90deba2cac2c3068bae2c49ed944744399f2"
+content-hash = "2e5305369f343dfdd6ce3c6e9dd47ff63dcf90a6ffc9a2f8fe922a089cba7256"
 
 [metadata.files]
 appdirs = [
@@ -417,6 +428,9 @@ invoke = [
     {file = "invoke-1.4.1-py2-none-any.whl", hash = "sha256:93e12876d88130c8e0d7fd6618dd5387d6b36da55ad541481dfa5e001656f134"},
     {file = "invoke-1.4.1-py3-none-any.whl", hash = "sha256:87b3ef9d72a1667e104f89b159eaf8a514dbf2f3576885b2bbdefe74c3fb2132"},
     {file = "invoke-1.4.1.tar.gz", hash = "sha256:de3f23bfe669e3db1085789fd859eb8ca8e0c5d9c20811e2407fa042e8a5e15d"},
+]
+ipcqueue = [
+    {file = "ipcqueue-0.9.6.tar.gz", hash = "sha256:62c7ed68fd65cc91f964dbe6eb2a7199c02eb72dedea81999526365dd9b4560a"},
 ]
 isort = [
     {file = "isort-5.5.4-py3-none-any.whl", hash = "sha256:36f0c6659b9000597e92618d05b72d4181104cf59472b1c6a039e3783f930c95"},

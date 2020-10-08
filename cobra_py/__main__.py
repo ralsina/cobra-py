@@ -1,8 +1,10 @@
 from functools import partial
-from multiprocessing import Process, Queue
+from threading import Thread
 from pathlib import Path
 from queue import Empty
 from typing import Tuple
+
+from ipcqueue.posixmq import Queue
 
 from cobra_py import rl
 from cobra_py.raylib import ffi
@@ -27,7 +29,7 @@ rl.set_trace_log_level(rl.LOG_NONE)
 
 class Screen:
     def __init__(self):
-        self.command_queue = Queue(maxsize=100)
+        self.command_queue = Queue('/foo')
         self._screen = []
         for y in range(25):  # rows
             self._screen.append([])
@@ -65,7 +67,7 @@ class Screen:
             while True:
                 command, a, kw = self.command_queue.get(False)
                 getattr(self, command)(*a, **kw)
-                self.command_queue.task_done()
+                # self.command_queue.task_done()
         except Empty:
             pass
 
@@ -96,8 +98,8 @@ def prompt():
             eval(cmd)
 
 
-x = Process(target=prompt)
-# x.start()
+x = Thread(target=prompt)
+x.start()
 
 screen.circle(100, 100, 50, rl.RED)
 screen.print_at(10, 10, "FOOBAR")
