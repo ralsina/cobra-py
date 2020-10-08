@@ -46,11 +46,17 @@ def esc(d: bytes):
 
 keys = {
     36: b"\n",  # Enter
+    23: b"\t",  # Tab
     111: esc(b"A"),  # Cursor up
     116: esc(b"B"),  # Cursor down
     114: esc(b"C"),  # Cursor right
     113: esc(b"D"),  # Cursor left
     22: b"\b",  # Backspace
+    119: esc(b"3~"),  # Delete
+}
+
+ctrl_keys = {
+    40: b"\04",  # D
 }
 
 colors = {
@@ -60,18 +66,34 @@ colors = {
     "brown": rl.BROWN,
     "blue": rl.BLUE,
     "magenta": rl.MAGENTA,
-    "cyan": (0,255,255,255),
+    "cyan": (0, 255, 255, 255),
     "white": rl.WHITE,
 }
+
+ctrl = False
 
 
 @ffi.callback("void(int,int,int,int)")
 def key_event(key, scancode, action, mods):
-    print("scancode=>", key, scancode, action)
-    if mods == 1:  # Key release
+    global ctrl
+    print("in-scancode=>", key, scancode, action, ctrl, mods)
+    if mods == 0:  # Key release
+        if action == 37:  # ctrl
+            print("ctrl-off")
+            ctrl = False
+        print("out-scancode=>", key, scancode, action, ctrl, mods)
         return
-    if data := keys.get(action):
+
+    # Key press or repeat
+    if action == 37:
+        print("ctrl-on")
+        ctrl = True
+    if ctrl and mods == 1:  # ctrl-key doesn't repeat
+        if data := ctrl_keys.get(action):
+            p_out.write(data)
+    elif data := keys.get(action):
         p_out.write(data)
+    print("out-scancode=>", key, scancode, action, ctrl, mods)
 
 
 rl.set_key_callback(key_event)

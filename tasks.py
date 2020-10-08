@@ -25,7 +25,7 @@ def build_raylib(c):
 @task
 def check(c):
     print("Formatting")
-    c.run("isort --recursive .")
+    c.run("isort .")
     c.run("black .")
 
 
