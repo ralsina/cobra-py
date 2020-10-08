@@ -23,7 +23,7 @@ text_size = rl.measure_text_ex(font, b"X", font.baseSize, 0)
 sw = int(80 * text_size.x)
 sh = int(25 * text_size.y)
 rl.set_window_size(sw, sh)
-rl.set_target_fps(60)
+rl.set_target_fps(24)
 
 
 term = pyte.HistoryScreen(80, 25)
@@ -34,30 +34,41 @@ if p_pid == 0:  # Child process
     os.execvpe(
         "bash",
         ["bash"],
-        env=dict(TERM="linux", COLUMNS="80", LINES="25", LC_ALL="en_US.UTF-8"),
+        env=dict(TERM="xterm", COLUMNS="80", LINES="25", LC_ALL="en_US.UTF-8"),
     )
 
 p_out = os.fdopen(master_fd, "w+b", 0)
 
 
 def esc(d: bytes):
-    return b"\x1b[" + d
+    return b"\x1b" + d
 
 
 keys = {
     36: b"\n",  # Enter
     23: b"\t",  # Tab
-    111: esc(b"A"),  # Cursor up
-    116: esc(b"B"),  # Cursor down
-    114: esc(b"C"),  # Cursor right
-    113: esc(b"D"),  # Cursor left
+    66: b"\x1b",  # ESC
+    111: esc(b"[A"),  # Cursor up
+    116: esc(b"[B"),  # Cursor down
+    114: esc(b"[C"),  # Cursor right
+    113: esc(b"[D"),  # Cursor left
     22: b"\b",  # Backspace
-    119: esc(b"3~"),  # Delete
+    119: esc(b"[3~"),  # Delete
+    67: esc(b"OP"),  # F1
+    68: esc(b"OQ"),  # F2
+    69: esc(b"OR"),  # F3
+    70: esc(b"OS"),  # F4
+    71: esc(b"[16~"),  # F5
+    72: esc(b"[17~"),  # F6
+    73: esc(b"[18~"),  # F7
+    74: esc(b"[19~"),  # F8
+    75: esc(b"[20~"),  # F9
+    76: esc(b"[21~"),  # F10
+    95: esc(b"[23~"),  # F11
+    96: esc(b"[24~"),  # F12
 }
 
-ctrl_keys = {
-    40: b"\04",  # D
-}
+ctrl_keys = {40: b"\x04", 54: b"\x03", 27: b"\x12"}  # D  # C  # R
 
 colors = {
     "black": rl.BLACK,
@@ -90,8 +101,10 @@ def key_event(key, scancode, action, mods):
         ctrl = True
     if ctrl and mods == 1:  # ctrl-key doesn't repeat
         if data := ctrl_keys.get(action):
+            print("--->", repr(data))
             p_out.write(data)
     elif data := keys.get(action):
+        print("--->", repr(data))
         p_out.write(data)
     print("out-scancode=>", key, scancode, action, ctrl, mods)
 
