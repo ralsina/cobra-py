@@ -15,7 +15,7 @@ sh = 450
 window = rl.init_window(sw, sh, b"Cobra Py!")
 
 font_path = str(
-    Path(rl.__file__).parent / "resources" / "fonts" / "Kepler-452b.ttf"
+    Path(rl.__file__).parent / "resources" / "fonts" / "monoid.ttf"
 ).encode("utf-8")
 font = rl.load_font_ex(font_path, 24, ffi.NULL, 0)
 text_size = rl.measure_text_ex(font, b"X", font.baseSize, 0)
