@@ -11,14 +11,18 @@ _special_keys = {
 
 def _parsed(keysym):
     if len(keysym) < 2:
-        return ['', '']
+        return ["", ""]
     if keysym[1] in _special_keys:
         return _special_keys[keysym[1]]
 
     elif keysym[1].startswith("0x00"):  # Ordinary key
         plain = chr(int(keysym[1], 16)).encode("utf8")
         shifted = chr(int(keysym[3], 16)).encode("utf8")
-        return (plain, shifted)
+        alt_gr = chr(int(keysym[9], 16)).encode("utf8") if len(keysym) >= 10 else b""
+        alt_gr_shifted = (
+            chr(int(keysym[11], 16)).encode("utf8") if len(keysym) >= 12 else b""
+        )
+        return (plain, shifted, alt_gr, alt_gr_shifted)
 
     # Who knows
     return (keysym[2].encode("utf8"), keysym[4].encode("utf8"))

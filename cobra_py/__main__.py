@@ -1,7 +1,7 @@
 from functools import partial
-from threading import Thread
 from pathlib import Path
 from queue import Empty
+from threading import Thread
 from typing import Tuple
 
 from ipcqueue.posixmq import Queue
@@ -14,9 +14,9 @@ sh = 450
 
 window = rl.init_window(sw, sh, b"Cobra Py!")
 
-font_path = str(
-    Path(rl.__file__).parent / "resources" / "fonts" / "monoid.ttf"
-).encode("utf-8")
+font_path = str(Path(rl.__file__).parent / "resources" / "fonts" / "monoid.ttf").encode(
+    "utf-8"
+)
 font = rl.load_font_ex(font_path, 24, ffi.NULL, 0)
 text_size = rl.measure_text_ex(font, b"X", font.baseSize, 0)
 sw = int(80 * text_size.x)
@@ -29,7 +29,7 @@ rl.set_trace_log_level(rl.LOG_NONE)
 
 class Screen:
     def __init__(self):
-        self.command_queue = Queue('/foo')
+        self.command_queue = Queue("/foo")
         self._screen = []
         for y in range(25):  # rows
             self._screen.append([])

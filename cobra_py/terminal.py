@@ -6,8 +6,8 @@ from pathlib import Path
 import pyte
 
 from cobra_py import rl
-from cobra_py.raylib import ffi
 from cobra_py.kbd_layout import read_xmodmap
+from cobra_py.raylib import ffi
 
 
 # prepend ESC
@@ -57,6 +57,7 @@ class RayTerminal(pyte.HistoryScreen):
 
     ctrl = False
     shift = False
+    alt_gr = False
 
     def __init__(self, columns=80, rows=25, cmd="bash", fps=30, show_fps=False):
         """Create terminal.
@@ -101,7 +102,7 @@ class RayTerminal(pyte.HistoryScreen):
                 "bash",
                 ["bash"],
                 env=dict(
-                    TERM="linux",
+                    TERM="xterm",
                     COLUMNS=str(self.columns),
                     LINES=str(self.rows),
                     LC_ALL="en_US.UTF-8",
@@ -121,33 +122,55 @@ class RayTerminal(pyte.HistoryScreen):
         print("in-scancode=>", key, scancode, action, mods)
         print(self.keymap[action])
         if mods == 0:  # Key release
+            # FIXME: get mod codes from xmodmap
             if action == 37:  # ctrl
                 print("ctrl-off")
                 self.ctrl = False
             elif action == 50:  # shift
                 print("shift-off")
                 self.shift = False
+            elif action == 108:  # AltGr
+                print("altgr-off")
+                self.alt_gr = False
             return
 
-        # Key press or repeat
+        # Key press (mods=1) or repeat (mods=2)
+
+        # Modifiers
         if action == 37:
             print("ctrl-on")
             self.ctrl = True
         elif action == 50:
             print("shift-on")
             self.shift = True
-        elif self.ctrl and mods == 1:  # ctrl-key doesn't repeat
+        elif action == 108:  # AltGr
+            print("altgr-on")
+            self.alt_gr = True
+
+        # ctrl-key doesn't repeat
+        elif self.ctrl and mods == 1:
+            # FIXME: generalize to all ctrl-things, add column in self.keymap
             if data := _ctrl_keys.get(action):
                 print("--->", repr(data))
                 self.p_out.write(data)
+
+        # FIXME: get rid of this, use self.keymap
         elif data := _keys.get(action):
             print("--->", repr(data))
             self.p_out.write(data)
-        elif self.shift:
-            letter = self.keymap[action][1]
-            self.p_out.write(letter)
+
         else:
-            letter = self.keymap[action][0]
+            if self.shift:
+                if self.alt_gr:
+                    letter = self.keymap[action][3]
+                else:
+                    letter = self.keymap[action][1]
+            else:
+                if self.alt_gr:
+                    letter = self.keymap[action][2]
+                else:
+                    letter = self.keymap[action][0]
+            print("---->", letter)
             self.p_out.write(letter)
 
     def run(self):
