@@ -9,33 +9,6 @@ from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
 from cobra_py.raylib import ffi
 
-
-# prepend ESC
-def _esc(d: bytes):
-    return b"\x1b" + d
-
-
-# Codes for special keys
-_keys = {
-    36: b"\n",  # Enter
-    23: b"\t",  # Tab
-    66: b"\x1b",  # ESC
-    22: b"\b",  # Backspace
-    119: _esc(b"[3~"),  # Delete
-    67: _esc(b"OP"),  # F1
-    68: _esc(b"OQ"),  # F2
-    69: _esc(b"OR"),  # F3
-    70: _esc(b"OS"),  # F4
-    71: _esc(b"[15~"),  # F5
-    72: _esc(b"[17~"),  # F6
-    73: _esc(b"[18~"),  # F7
-    74: _esc(b"[19~"),  # F8
-    75: _esc(b"[20~"),  # F9
-    76: _esc(b"[21~"),  # F10
-    95: _esc(b"[23~"),  # F11
-    96: _esc(b"[24~"),  # F12
-}
-
 # Codes for ctrl+keys
 _ctrl_keys = {40: b"\x04", 54: b"\x03", 27: b"\x12"}
 
@@ -86,7 +59,7 @@ class RayTerminal(pyte.HistoryScreen):
 
     def write_process_input(self, data):
         if self.p_out is not None:
-            self.p_out.write(data.encode('utf-8'))
+            self.p_out.write(data.encode("utf-8"))
 
     def _init_window(self):
         rl.init_window(1, 1, b"CobraPy Terminal!")
@@ -128,10 +101,10 @@ class RayTerminal(pyte.HistoryScreen):
         print(self.keymap[action])
         if mods == 0:  # Key release
             # FIXME: get mod codes from xmodmap
-            if action == 37:  # ctrl
+            if action in {37, 105}:  # ctrl
                 print("ctrl-off")
                 self.ctrl = False
-            elif action == 50:  # shift
+            elif action in {50, 62}:  # shift
                 print("shift-off")
                 self.shift = False
             elif action == 108:  # AltGr
@@ -158,11 +131,6 @@ class RayTerminal(pyte.HistoryScreen):
             if data := _ctrl_keys.get(action):
                 print("--->", repr(data))
                 self.p_out.write(data)
-
-        # FIXME: get rid of this, use self.keymap
-        elif data := _keys.get(action):
-            print("--->", repr(data))
-            self.p_out.write(data)
 
         else:
             if self.shift:

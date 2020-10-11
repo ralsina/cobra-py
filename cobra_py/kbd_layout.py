@@ -2,6 +2,23 @@ import subprocess
 
 _special_keys = {
     # Keysym : (plain, shifted)
+    "0xff0d": (b"\n", b"\n"),  # Enter
+    "0xff09": (b"\t", b"\x1b[[Z"),  # Tab
+    "0xff1b": (b"\x1b", b"\x1b"),  # ESC
+    "0xff08": (b"\b", b"\b"),  # Backspace
+    "0xffff": (b"\x1b[3~", b"\x1b[3~"),  # Delete
+    "0xffbe": (b"\x1bOP", b"\x1b[1;2P"),  # F1
+    "0xffbf": (b"\x1bOQ", b"\x1b[1;2Q"),  # F2
+    "0xffc0": (b"\x1bOR", b"\x1b[1;2R"),  # F3
+    "0xffc1": (b"\x1bOS", b"\x1b[1;2S"),  # F4
+    "0xffc2": (b"\x1b[15~", b"\x1b[15;2~"),  # F5
+    "0xffc3": (b"\x1b[17~", b"\x1b[17;2~"),  # F6
+    "0xffc4": (b"\x1b[18~", b"\x1b[18;2~"),  # F7
+    "0xffc5": (b"\x1b[19~", b"\x1b[19;2~"),  # F8
+    "0xffc6": (b"\x1b[20~", b"\x1b[20;2~"),  # F9
+    "0xffc7": (b"\x1b[21~", b"\x1b[21;2~"),  # F10
+    "0xffc8": (b"\x1b[23~", b"\x1b[23;2~"),  # F11
+    "0xffc9": (b"\x1b[24~", b"\x1b[24;2~"),  # F12
     "0xff51": (b"\x1b[D", b"\x1b[1;2D"),  # Left
     "0xff52": (b"\x1b[A", b"\x1b[1;2A"),  # Up
     "0xff53": (b"\x1b[C", b"\x1b[1;2C"),  # Right
