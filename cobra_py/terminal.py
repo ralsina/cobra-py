@@ -136,7 +136,7 @@ class RayTerminal(pyte.HistoryScreen):
         # ctrl-key doesn't repeat
         elif self.ctrl and mods == 1:
             # FIXME: generalize to all ctrl-things, add column in self.keymap
-            self.p_out.write(_ctrl_keys.get(action, b''))
+            self.p_out.write(_ctrl_keys.get(action, b""))
 
         else:
             if self.shift:

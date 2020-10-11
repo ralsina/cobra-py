@@ -27,6 +27,8 @@ _special_keys = {
     "0xff54": (b"\x1b[B", b"\x1b[1;2B"),  # Down
     "0xff50": (b"\x1b[H", b"\x1b[1;2H"),  # Home
     "0xff57": (b"\x1b[F", b"\x1b[1;2F"),  # End
+    "0xff55": (b"\x1b[5~", b"\x1b[5;2~"),  # PgUp
+    "0xff56": (b"\x1b[6~", b"\x1b[6;2~"),  # PgDn
 }
 
 
