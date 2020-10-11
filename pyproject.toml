@@ -6,6 +6,9 @@ authors = ["Roberto Alsina <roberto.alsina@gmail.com>"]
 license = "MIT"
 include = ["examples/*", "README.md", "tasks.py", "raylib.patch", "include/*"]
 
+[tool.poetry.scripts]
+sweepleg = 'cobra_py.repl:run'
+
 [tool.poetry.dependencies]
 python = "^3.8"
 pyte = "^0.8.0"

@@ -38,7 +38,7 @@ def _execute(line: str) -> None:
         exec(code, _globals, _locals)
 
 
-def main():
+def run():
     session = PromptSession(
         lexer=PygmentsLexer(PythonLexer),
         key_bindings=bindings,
@@ -57,4 +57,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run()

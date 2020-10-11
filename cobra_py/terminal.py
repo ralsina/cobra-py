@@ -58,6 +58,7 @@ class RayTerminal(pyte.HistoryScreen):
     ctrl = False
     shift = False
     alt_gr = False
+    p_out = None
 
     def __init__(self, columns=80, rows=25, cmd="bash", fps=30, show_fps=False):
         """Create terminal.
@@ -83,6 +84,10 @@ class RayTerminal(pyte.HistoryScreen):
     def _init_kbd(self):
         self.keymap = read_xmodmap()
 
+    def write_process_input(self, data):
+        if self.p_out is not None:
+            self.p_out.write(data.encode('utf-8'))
+
     def _init_window(self):
         rl.init_window(1, 1, b"CobraPy Terminal!")
         font_path = str(
@@ -99,8 +104,8 @@ class RayTerminal(pyte.HistoryScreen):
         p_pid, master_fd = pty.fork()
         if p_pid == 0:  # Child process
             os.execvpe(
-                "bash",
-                ["bash"],
+                "/home/ralsina/.virtualenvs/cobrapy/bin/sweepleg",
+                ["sweepleg"],
                 env=dict(
                     TERM="xterm",
                     COLUMNS=str(self.columns),
