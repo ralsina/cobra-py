@@ -25,6 +25,14 @@ _colors = {
 }
 
 
+def parse_color(rgb):
+    r = int(rgb[:2], 16)
+    g = int(rgb[2:4], 16)
+    b = int(rgb[4:6], 16)
+    color = (r, g, b, 255)
+    return color
+
+
 class RayTerminal(pyte.HistoryScreen):
     """A simple terminal with a graphical interface implemented using Raylib."""
 
@@ -77,10 +85,10 @@ class RayTerminal(pyte.HistoryScreen):
         p_pid, master_fd = pty.fork()
         if p_pid == 0:  # Child process
             os.execvpe(
-                "/home/ralsina/.virtualenvs/cobrapy/bin/sweepleg",
-                ["sweepleg"],
+                "bash",
+                ["bash"],
                 env=dict(
-                    TERM="xterm",
+                    TERM="xterm-256color",
                     COLUMNS=str(self.columns),
                     LINES=str(self.rows),
                     LC_ALL="en_US.UTF-8",
@@ -164,9 +172,15 @@ class RayTerminal(pyte.HistoryScreen):
                 line = self.buffer[y]
                 for x in range(self.columns):  # Can't enumerate, it's sparse
                     char = line[x]
+                    if char.fg == "default":
+                        fg = rl.RAYWHITE
+                    else:
+                        fg = _colors.get(char.fg, None) or parse_color(char.fg)
+                    if char.bg == "default":
+                        bg = rl.BLACK
+                    else:
+                        bg = _colors.get(char.bg, None) or parse_color(char.bg)
 
-                    fg = _colors.get(char.fg, rl.WHITE)
-                    bg = _colors.get(char.bg, rl.BLACK)
                     if char.reverse:
                         fg, bg = bg, fg
 

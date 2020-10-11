@@ -27,7 +27,6 @@ _special_keys = {
     "0xff54": (b"\x1b[B", b"\x1b[1;2B"),  # Down
     "0xff50": (b"\x1b[H", b"\x1b[1;2H"),  # Home
     "0xff57": (b"\x1b[F", b"\x1b[1;2F"),  # End
-
 }
 
 
@@ -41,10 +40,12 @@ def _parsed(keysym):
     if "dead" in keysym[2].lower():
         keysym = [keysym[0]] + keysym[9:]
 
-    plain = keysyms.get(keysym[1], '').encode("utf-8")
-    shifted = keysyms.get(keysym[3], '').encode("utf-8")
-    alt_gr = keysyms.get(keysym[9], '').encode("utf-8") if len(keysym) >= 10 else b""
-    alt_gr_shifted = keysyms.get(keysym[11], '').encode("utf-8") if len(keysym) >= 12 else b""
+    plain = keysyms.get(keysym[1], "").encode("utf-8")
+    shifted = keysyms.get(keysym[3], "").encode("utf-8")
+    alt_gr = keysyms.get(keysym[9], "").encode("utf-8") if len(keysym) >= 10 else b""
+    alt_gr_shifted = (
+        keysyms.get(keysym[11], "").encode("utf-8") if len(keysym) >= 12 else b""
+    )
     return (plain, shifted, alt_gr, alt_gr_shifted)
 
     # Who knows
