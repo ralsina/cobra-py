@@ -10,6 +10,9 @@ include = ["examples/*", "README.md", "tasks.py", "raylib.patch", "include/*"]
 python = "^3.8"
 pyte = "^0.8.0"
 ipcqueue = "^0.9.6"
+prompt_toolkit = "^3.0.7"
+pygments = "^2.7.1"
+jedi = "^0.17.2"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.6.0"

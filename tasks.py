@@ -27,6 +27,7 @@ def check(c):
     print("Formatting")
     c.run("isort .")
     c.run("black .")
+    c.run("flake8 .")
 
 
 @task(build_raylib)

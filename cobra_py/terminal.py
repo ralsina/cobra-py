@@ -88,7 +88,7 @@ class RayTerminal(pyte.HistoryScreen):
         font_path = str(
             Path(rl.__file__).parent / "resources" / "fonts" / "monoid.ttf"
         ).encode("utf-8")
-        self.font = rl.load_font_ex(font_path, 24, ffi.NULL, 0)
+        self.font = rl.load_font_ex(font_path, 24, ffi.NULL, 1024)
         self.text_size = rl.measure_text_ex(self.font, b"X", self.font.baseSize, 0)
 
         self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
