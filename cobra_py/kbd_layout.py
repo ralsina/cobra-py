@@ -1,5 +1,7 @@
 import subprocess
 
+from cobra_py.keysyms import keysyms
+
 _special_keys = {
     # Keysym : (plain, shifted)
     "0xff0d": (b"\n", b"\n"),  # Enter
@@ -23,6 +25,9 @@ _special_keys = {
     "0xff52": (b"\x1b[A", b"\x1b[1;2A"),  # Up
     "0xff53": (b"\x1b[C", b"\x1b[1;2C"),  # Right
     "0xff54": (b"\x1b[B", b"\x1b[1;2B"),  # Down
+    "0xff50": (b"\x1b[H", b"\x1b[1;2H"),  # Home
+    "0xff57": (b"\x1b[F", b"\x1b[1;2F"),  # End
+
 }
 
 
@@ -32,14 +37,15 @@ def _parsed(keysym):
     if keysym[1] in _special_keys:
         return _special_keys[keysym[1]]
 
-    elif keysym[1].startswith("0x00"):  # Ordinary key
-        plain = chr(int(keysym[1], 16)).encode("utf8")
-        shifted = chr(int(keysym[3], 16)).encode("utf8")
-        alt_gr = chr(int(keysym[9], 16)).encode("utf8") if len(keysym) >= 10 else b""
-        alt_gr_shifted = (
-            chr(int(keysym[11], 16)).encode("utf8") if len(keysym) >= 12 else b""
-        )
-        return (plain, shifted, alt_gr, alt_gr_shifted)
+    # Make deadkeys undead
+    if "dead" in keysym[2].lower():
+        keysym = [keysym[0]] + keysym[9:]
+
+    plain = keysyms.get(keysym[1], '').encode("utf-8")
+    shifted = keysyms.get(keysym[3], '').encode("utf-8")
+    alt_gr = keysyms.get(keysym[9], '').encode("utf-8") if len(keysym) >= 10 else b""
+    alt_gr_shifted = keysyms.get(keysym[11], '').encode("utf-8") if len(keysym) >= 12 else b""
+    return (plain, shifted, alt_gr, alt_gr_shifted)
 
     # Who knows
     return (keysym[2].encode("utf8"), keysym[4].encode("utf8"))
@@ -66,6 +72,3 @@ def read_xmodmap():
 
         keys[int(keysyms[0])] = _parsed(keysyms)
     return keys
-
-
-read_xmodmap()
