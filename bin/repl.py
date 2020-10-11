@@ -6,9 +6,10 @@
 """
 
 from prompt_toolkit import PromptSession
-from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import PythonLexer
+
 from cobra_py.prompt_utils import document_is_multiline_python
 
 bindings = KeyBindings()
@@ -38,7 +39,11 @@ def _execute(line: str) -> None:
 
 
 def main():
-    session = PromptSession(lexer=PygmentsLexer(PythonLexer), key_bindings=bindings, prompt_continuation="... ")
+    session = PromptSession(
+        lexer=PygmentsLexer(PythonLexer),
+        key_bindings=bindings,
+        prompt_continuation="... ",
+    )
     while True:
         try:
             text = session.prompt(">>> ")
