@@ -136,9 +136,7 @@ class RayTerminal(pyte.HistoryScreen):
         # ctrl-key doesn't repeat
         elif self.ctrl and mods == 1:
             # FIXME: generalize to all ctrl-things, add column in self.keymap
-            if data := _ctrl_keys.get(action):
-                print("--->", repr(data))
-                self.p_out.write(data)
+            self.p_out.write(_ctrl_keys.get(action, b''))
 
         else:
             if self.shift:
@@ -168,6 +166,7 @@ class RayTerminal(pyte.HistoryScreen):
                 except OSError:  # Program went away
                     break
 
+            # FIXME: There is lots and lots to optimize here
             for y, line in enumerate(self.display):
                 line = self.buffer[y]
                 for x in range(self.columns):  # Can't enumerate, it's sparse
