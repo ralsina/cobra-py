@@ -55,8 +55,9 @@ class Screen:
         font_path = str(
             Path(__file__).parent / "resources" / "fonts" / "monoid.ttf"
         ).encode("utf-8")
-        self.font = rl.LoadFontEx(font_path, 24, ffi.NULL, 1024)
+        self.font = rl.LoadFontEx(font_path, 24, ffi.NULL, 256)
         self.text_size = rl.MeasureTextEx(self.font, b"X", self.font.baseSize, 0)
+        rl.SetTargetFPS(60)
 
         self.layers = []
 

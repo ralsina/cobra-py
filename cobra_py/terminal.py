@@ -142,6 +142,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
             self.p_out.write(letter)
 
     def update(self):
+        # Honestly, this could go in a thread and block on select, but who cares
         ready, _, _ = select.select([self.p_out], [], [], 0)
         if ready:
             try:
