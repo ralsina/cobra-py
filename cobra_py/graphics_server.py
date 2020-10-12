@@ -29,7 +29,7 @@ class Server(rl.Layer):
     # Below here: things that draw things and whatnot
 
     def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
-        rl.BeginTextureMode(self.buffer)
+        rl.BeginTextureMode(self.texture)
         rl.draw_circle(x, y, int(radius), color)
         rl.EndTextureMode()
 

@@ -9,6 +9,13 @@ from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
 from cobra_py.raylib import ffi
 
+# TODO:
+# * mouse support
+# * generalize keyboard support for screens/layers
+
+
+
+# TODO: get rid of these dicts
 # Codes for ctrl+keys
 _ctrl_keys = {40: b"\x04", 54: b"\x03", 27: b"\x12"}
 
@@ -33,7 +40,7 @@ def parse_color(rgb):
     return color
 
 
-class RayTerminal(pyte.HistoryScreen, rl.Layer):
+class Terminal(pyte.HistoryScreen, rl.Layer):
     """A simple terminal with a graphical interface implemented using Raylib."""
 
     ctrl = False
