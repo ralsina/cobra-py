@@ -5,7 +5,7 @@ If you really, really, really want to try this out while it doesn't work:
 
 * In a venv
 * poetry install
-* python -m cobra_py
+* run the examples
 * *stuff* may or may not happen
 
 ---

@@ -2,11 +2,8 @@ import os
 import pty
 import select
 from pathlib import Path
-from queue import Empty
-from typing import Tuple
 
 import pyte
-from ipcqueue.posixmq import Queue
 
 from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
@@ -36,7 +33,7 @@ def parse_color(rgb):
     return color
 
 
-class RayTerminal(pyte.HistoryScreen):
+class RayTerminal(pyte.HistoryScreen, rl.Layer):
     """A simple terminal with a graphical interface implemented using Raylib."""
 
     ctrl = False
@@ -44,41 +41,22 @@ class RayTerminal(pyte.HistoryScreen):
     alt_gr = False
     p_out = None
 
-    def __init__(self, columns=80, rows=25, cmd="bash", fps=30, show_fps=False):
+    def __init__(self, screen, cmd="bash"):
         """Create terminal.
 
-        :columns: width in characters.
-        :rows: height in characters.
         :cmd: command to run in the terminal.
-        :fps: aim to this many FPS
-        :show_fps: display a FPS counter.
         """
 
-        super().__init__(columns, rows)
-        self.rows = rows
-        self._init_window()
+        rl.Layer.__init__(self, screen)
+        self.text_size = screen.text_size
+        self.font = screen.font
+        self.rows = int(self._screen.height // self.text_size.y)
+        self.columns = int(self._screen.width // self.text_size.x)
+        pyte.HistoryScreen.__init__(self, self.rows, self.columns)
         self._init_kbd()
-        self._spawn_shell()
-        sw = int(self.text_size.x * columns)
-        sh = int(self.text_size.y * rows)
-        rl.set_window_size(sw, sh)
-        rl.set_target_fps(fps)
-        self.show_fps = show_fps
-        self._buffer = rl.gen_image_color(sw, sh, (255, 0, 0, 0))
-        self._buffer_texture = rl.load_render_texture(sw, sh)
-        rl.BeginTextureMode(self._buffer_texture)
-        rl.ClearBackground((0, 0, 0, 0))
-        rl.EndTextureMode()
-
-        self.command_queue = Queue("/foo")
-
-    def process_commands(self):
-        try:
-            while True:
-                command, a, kw = self.command_queue.get(False)
-                getattr(self, command)(*a, **kw)
-        except Empty:
-            pass
+        self._spawn_shell(cmd)
+        self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
+        rl.set_key_callback(self.__cb)
 
     def _init_kbd(self):
         self.keymap = read_xmodmap()
@@ -87,24 +65,13 @@ class RayTerminal(pyte.HistoryScreen):
         if self.p_out is not None:
             self.p_out.write(data.encode("utf-8"))
 
-    def _init_window(self):
-        rl.init_window(1, 1, b"CobraPy Terminal!")
-        font_path = str(
-            Path(rl.__file__).parent / "resources" / "fonts" / "monoid.ttf"
-        ).encode("utf-8")
-        self.font = rl.load_font_ex(font_path, 24, ffi.NULL, 1024)
-        self.text_size = rl.measure_text_ex(self.font, b"X", self.font.baseSize, 0)
-
-        self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
-        rl.set_key_callback(self.__cb)
-
-    def _spawn_shell(self):
+    def _spawn_shell(self, cmd):
         self.stream = pyte.ByteStream(self)
         p_pid, master_fd = pty.fork()
         if p_pid == 0:  # Child process
             os.execvpe(
-                "bash",
-                ["bash"],
+                cmd,
+                [cmd],
                 env=dict(
                     TERM="xterm-256color",
                     COLUMNS=str(self.columns),
@@ -161,81 +128,58 @@ class RayTerminal(pyte.HistoryScreen):
                     letter = self.keymap[action][0]
             self.p_out.write(letter)
 
-    def run(self):
-        while not rl.window_should_close():
-            self.process_commands()
-            rl.begin_drawing()
-            rl.clear_background(rl.BLACK)
+    def update(self):
+        ready, _, _ = select.select([self.p_out], [], [], 0)
+        if ready:
+            try:
+                data = self.p_out.read(1024)
+                if data:
+                    self.stream.feed(data)
+            except OSError:  # Program went away
+                return
+        rl.BeginTextureMode(self.texture)
+        rl.clear_background(rl.BLACK)
 
-            ready, _, _ = select.select([self.p_out], [], [], 0)
-            if ready:
-                try:
-                    data = self.p_out.read(1024)
-                    if data:
-                        self.stream.feed(data)
-                except OSError:  # Program went away
-                    break
+        # FIXME: There is lots and lots to optimize here
+        for y, line in enumerate(self.display):
+            line = self.buffer[y]
+            for x in range(self.columns):  # Can't enumerate, it's sparse
+                char = line[x]
+                if char.fg == "default":
+                    fg = rl.RAYWHITE
+                else:
+                    fg = _colors.get(char.fg, None) or parse_color(char.fg)
+                if char.bg == "default":
+                    bg = (0, 0, 0, 0)  # Transparent
+                else:
+                    bg = _colors.get(char.bg, None) or parse_color(char.bg)
 
-            # FIXME: There is lots and lots to optimize here
-            for y, line in enumerate(self.display):
-                line = self.buffer[y]
-                for x in range(self.columns):  # Can't enumerate, it's sparse
-                    char = line[x]
-                    if char.fg == "default":
-                        fg = rl.RAYWHITE
-                    else:
-                        fg = _colors.get(char.fg, None) or parse_color(char.fg)
-                    if char.bg == "default":
-                        bg = (0, 0, 0, 0)  # Transparent
-                    else:
-                        bg = _colors.get(char.bg, None) or parse_color(char.bg)
+                if char.reverse:
+                    fg, bg = bg, fg
 
-                    if char.reverse:
-                        fg, bg = bg, fg
-
-                    rl.draw_rectangle(
-                        int(x * self.text_size.x),
-                        int(y * self.text_size.y),
-                        int(self.text_size.x),
-                        int(self.text_size.y),
-                        bg,
-                    )
-                    rl.draw_text_ex(
-                        self.font,
-                        char.data.encode("utf-8"),
-                        (x * self.text_size.x, y * self.text_size.y),
-                        self.font.baseSize,
-                        0,
-                        fg,
-                    )
-            self.dirty.clear()
-
-            # Draw graphics buffer
-            rl.draw_texture_rec(
-                self._buffer_texture.texture,
-                (
+                rl.draw_rectangle(
+                    int(x * self.text_size.x),
+                    int(y * self.text_size.y),
+                    int(self.text_size.x),
+                    int(self.text_size.y),
+                    bg,
+                )
+                rl.draw_text_ex(
+                    self.font,
+                    char.data.encode("utf-8"),
+                    (x * self.text_size.x, y * self.text_size.y),
+                    self.font.baseSize,
                     0,
-                    0,
-                    self._buffer_texture.texture.width,
-                    -self._buffer_texture.texture.height,
-                ),
-                (0, 0),
-                rl.WHITE,
-            )
+                    fg,
+                )
+        self.dirty.clear()
 
-            # draw cursor
-            rl.draw_rectangle(
-                int(self.cursor.x * self.text_size.x),
-                int(self.cursor.y * self.text_size.y),
-                int(self.text_size.x),
-                int(self.text_size.y),
-                (100, 108, 100, 100),
-            )
-            if self.show_fps:
-                rl.draw_fps(10, 10)
-            rl.end_drawing()
-
-    def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
-        rl.BeginTextureMode(self._buffer_texture)
-        rl.draw_circle(x, y, int(radius), color)
-        rl.EndTextureMode()
+        # draw cursor
+        rl.draw_rectangle(
+            int(self.cursor.x * self.text_size.x),
+            int(self.cursor.y * self.text_size.y),
+            int(self.text_size.x),
+            int(self.text_size.y),
+            (100, 108, 100, 100),
+        )
+        rl.end_texture_mode()

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+from cobra_py.rl import Screen
 from cobra_py.terminal import RayTerminal
 
-term = RayTerminal(80, 25, show_fps=True)
-term.run()
+screen = Screen(800, 600)
+term = RayTerminal(screen)
+screen.run()
