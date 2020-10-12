@@ -12,7 +12,6 @@ from cobra_py.raylib import ffi
 # * mouse support
 # * generalize keyboard support for screens/layers
 
-
 # Codes for ctrl+keys
 
 def ctrl_key(char: bytes):
@@ -47,6 +46,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
     ctrl = False
     shift = False
+    alt = False
     alt_gr = False
     mouse_pressed = False
     p_out = None
@@ -135,6 +135,8 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                 self.ctrl = False
             elif action in {50, 62}:  # shift
                 self.shift = False
+            elif action == 64:  # Alt
+                self.alt = False
             elif action == 108:  # AltGr
                 self.alt_gr = False
             return
@@ -142,17 +144,20 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         # Key press (mods=1) or repeat (mods=2)
 
         # Modifiers
-        if action == 37:
+        if action in {37, 105}:
             self.ctrl = True
-        elif action == 50:
+        elif action in {50, 62}:
             self.shift = True
+        elif action == 64:  # Alt
+            self.alt = True
         elif action == 108:  # AltGr
             self.alt_gr = True
 
         # ctrl-key doesn't repeat
         elif self.ctrl and mods == 1:
             self.p_out.write(ctrl_key(self.keymap[action][0]))
-
+        elif self.alt:
+            self.p_out.write(b'\x1b' + self.keymap[action][0])
         else:
             if self.shift:
                 if self.alt_gr:
