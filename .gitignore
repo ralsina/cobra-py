@@ -145,3 +145,5 @@ cobra_py/raylib.o
 
 # Not really forking raylib
 raylib/
+t/
+bindings.json
