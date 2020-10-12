@@ -52,7 +52,8 @@ class RayTerminal(pyte.HistoryScreen, rl.Layer):
         self.font = screen.font
         self.rows = int(self._screen.height // self.text_size.y)
         self.columns = int(self._screen.width // self.text_size.x)
-        pyte.HistoryScreen.__init__(self, self.rows, self.columns)
+        print(self.rows, self.columns)
+        pyte.HistoryScreen.__init__(self, self.columns, self.rows)
         self._init_kbd()
         self._spawn_shell(cmd)
         self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
@@ -73,13 +74,18 @@ class RayTerminal(pyte.HistoryScreen, rl.Layer):
                 cmd,
                 [cmd],
                 env=dict(
-                    TERM="xterm-256color",
+                    TERM="xterm",
                     COLUMNS=str(self.columns),
                     LINES=str(self.rows),
                     LC_ALL="en_US.UTF-8",
                 ),
             )
         self.p_out = os.fdopen(master_fd, "w+b", 0)
+
+    def set_margins(self, *args, **kwargs):
+        # See https://github.com/selectel/pyte/issues/67
+        kwargs.pop("private", None)
+        return super().set_margins(*args, **kwargs)
 
     def key_event(self, key, scancode, action, mods):
         """Process one keyboard event.
