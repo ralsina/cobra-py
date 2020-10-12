@@ -14,7 +14,6 @@ from cobra_py.raylib import ffi
 # * generalize keyboard support for screens/layers
 
 
-
 # TODO: get rid of these dicts
 # Codes for ctrl+keys
 _ctrl_keys = {40: b"\x04", 54: b"\x03", 27: b"\x12"}
@@ -47,6 +46,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
     shift = False
     alt_gr = False
     p_out = None
+    last_cursor = (-1, -1)
 
     def __init__(self, screen, cmd="bash"):
         """Create terminal.
@@ -141,6 +141,45 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                     letter = self.keymap[action][0]
             self.p_out.write(letter)
 
+    def draw_cell(self, x, y):
+        char = self.buffer[y][x]
+        if char.fg == "default":
+            fg = rl.RAYWHITE
+        else:
+            fg = _colors.get(char.fg, None) or parse_color(char.fg)
+        if char.bg == "default":
+            bg = rl.BLACK
+        else:
+            bg = _colors.get(char.bg, None) or parse_color(char.bg)
+
+        if char.reverse:
+            fg, bg = bg, fg
+
+        rl.draw_rectangle(
+            int(x * self.text_size.x),
+            int(y * self.text_size.y),
+            int(self.text_size.x),
+            int(self.text_size.y),
+            bg,
+        )
+        rl.draw_text_ex(
+            self.font,
+            char.data.encode("utf-8"),
+            (x * self.text_size.x, y * self.text_size.y),
+            self.font.baseSize,
+            0,
+            fg,
+        )
+        if (x, y) == (self.cursor.x, self.cursor.y):
+            self.last_cursor = (x, y)
+            rl.draw_rectangle(
+                int(self.cursor.x * self.text_size.x),
+                int(self.cursor.y * self.text_size.y),
+                int(self.text_size.x),
+                int(self.text_size.y),
+                (100, 108, 100, 100),
+            )
+
     def update(self):
         # Honestly, this could go in a thread and block on select, but who cares
         ready, _, _ = select.select([self.p_out], [], [], 0)
@@ -153,46 +192,11 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                 return
         rl.BeginTextureMode(self.texture)
 
-        # FIXME: There is lots and lots to optimize here
+        if self.last_cursor != (self.cursor.x, self.cursor.y):
+            self.draw_cell(*self.last_cursor)
         for y in self.dirty:
-            line = self.buffer[y]
             for x in range(self.columns):  # Can't enumerate, it's sparse
-                char = line[x]
-                if char.fg == "default":
-                    fg = rl.RAYWHITE
-                else:
-                    fg = _colors.get(char.fg, None) or parse_color(char.fg)
-                if char.bg == "default":
-                    bg = rl.BLACK
-                else:
-                    bg = _colors.get(char.bg, None) or parse_color(char.bg)
-
-                if char.reverse:
-                    fg, bg = bg, fg
-
-                rl.draw_rectangle(
-                    int(x * self.text_size.x),
-                    int(y * self.text_size.y),
-                    int(self.text_size.x),
-                    int(self.text_size.y),
-                    bg,
-                )
-                rl.draw_text_ex(
-                    self.font,
-                    char.data.encode("utf-8"),
-                    (x * self.text_size.x, y * self.text_size.y),
-                    self.font.baseSize,
-                    0,
-                    fg,
-                )
+                self.draw_cell(x, y)
         self.dirty.clear()
 
-        # draw cursor
-        rl.draw_rectangle(
-            int(self.cursor.x * self.text_size.x),
-            int(self.cursor.y * self.text_size.y),
-            int(self.text_size.x),
-            int(self.text_size.y),
-            (100, 108, 100, 100),
-        )
         rl.end_texture_mode()
