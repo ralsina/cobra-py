@@ -13,9 +13,13 @@ from cobra_py.raylib import ffi
 # * generalize keyboard support for screens/layers
 
 
-# TODO: get rid of these dicts
 # Codes for ctrl+keys
-_ctrl_keys = {40: b"\x04", 54: b"\x03", 27: b"\x12"}
+
+def ctrl_key(char: bytes):
+    if 96 < char[0] < 123:
+        return chr(ord(char) & 31).encode('utf8')
+    return char
+
 
 # Color palette
 _colors = {
@@ -59,7 +63,6 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         self.font = screen.font
         self.rows = int(self._screen.height // self.text_size.y)
         self.columns = int(self._screen.width // self.text_size.x)
-        print(self.rows, self.columns)
         pyte.HistoryScreen.__init__(self, self.columns, self.rows)
         self._init_kbd()
         self._spawn_shell(cmd)
@@ -148,8 +151,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
         # ctrl-key doesn't repeat
         elif self.ctrl and mods == 1:
-            # FIXME: generalize to all ctrl-things, add column in self.keymap
-            self.p_out.write(_ctrl_keys.get(action, b""))
+            self.p_out.write(ctrl_key(self.keymap[action][0]))
 
         else:
             if self.shift:
@@ -220,8 +222,6 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
         self.draw_cell(*self.last_cursor)
         self.draw_cell(self.cursor.x, self.cursor.y)
-        if self.dirty:
-            print(self.dirty, self.cursor.x, self.cursor.y)
         for y in self.dirty:
             for x in range(self.columns):  # Can't enumerate, it's sparse
                 self.draw_cell(x, y)
