@@ -1,9 +1,10 @@
 """Client for the CobraPy graphics protocol."""
 
 from functools import partial
-from cobra_py import graphics_server
 
 from ipcqueue.posixmq import Queue
+
+from cobra_py import graphics_server
 
 __command_queue = Queue("/foo")
 

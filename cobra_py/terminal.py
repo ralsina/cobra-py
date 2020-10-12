@@ -45,6 +45,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
     ctrl = False
     shift = False
     alt_gr = False
+    mouse_pressed = False
     p_out = None
     last_cursor = (-1, -1)
 
@@ -93,6 +94,22 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         # See https://github.com/selectel/pyte/issues/67
         kwargs.pop("private", None)
         return super().set_margins(*args, **kwargs)
+
+    def mouse_event(self):
+        x = int(rl.get_mouse_x() // self.text_size.x) + 1
+        y = int(rl.get_mouse_y() // self.text_size.y) + 1
+
+        if rl.is_mouse_button_pressed(rl.MOUSE_LEFT_BUTTON):
+            print(x, y)
+            self.mouse_pressed = True
+            self.p_out.write(b"\x1b" + f"[<0;{str(x)};{str(y)}M".encode("utf-8"))
+
+        elif self.mouse_pressed and not rl.is_mouse_button_pressed(
+            rl.MOUSE_LEFT_BUTTON
+        ):
+            self.mouse_pressed = False
+            self.p_out.write(b"\x1b" + f"[<0;{str(x)};{str(y)}m".encode("utf-8"))
+
 
     def key_event(self, key, scancode, action, mods):
         """Process one keyboard event.
@@ -182,10 +199,13 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
     def update(self):
         # Honestly, this could go in a thread and block on select, but who cares
+
+        self.mouse_event()
+
         ready, _, _ = select.select([self.p_out], [], [], 0)
         if ready:
             try:
-                data = self.p_out.read(1024)
+                data = self.p_out.read(65535)
                 if data:
                     self.stream.feed(data)
             except OSError:  # Program went away

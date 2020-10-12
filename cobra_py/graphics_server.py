@@ -1,9 +1,11 @@
 """Server for the CobraPy graphics protocol."""
 
 from queue import Empty
-from ipcqueue.posixmq import Queue
-from cobra_py import rl
 from typing import Tuple
+
+from ipcqueue.posixmq import Queue
+
+from cobra_py import rl
 
 
 class Server(rl.Layer):
