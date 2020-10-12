@@ -151,10 +151,9 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
             except OSError:  # Program went away
                 return
         rl.BeginTextureMode(self.texture)
-        rl.clear_background(rl.BLACK)
 
         # FIXME: There is lots and lots to optimize here
-        for y, line in enumerate(self.display):
+        for y in self.dirty:
             line = self.buffer[y]
             for x in range(self.columns):  # Can't enumerate, it's sparse
                 char = line[x]
@@ -163,7 +162,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                 else:
                     fg = _colors.get(char.fg, None) or parse_color(char.fg)
                 if char.bg == "default":
-                    bg = (0, 0, 0, 0)  # Transparent
+                    bg = rl.BLACK
                 else:
                     bg = _colors.get(char.bg, None) or parse_color(char.bg)
 
