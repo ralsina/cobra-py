@@ -1,7 +1,6 @@
 import os
 import pty
 import select
-from pathlib import Path
 
 import pyte
 
@@ -96,20 +95,27 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         return super().set_margins(*args, **kwargs)
 
     def mouse_event(self):
+        # See https://github.com/prompt-toolkit/python-prompt-toolkit/blob/master/prompt_toolkit/key_binding/bindings/mouse.py#L23
+        # For examples of decoding these events we are generating
         x = int(rl.get_mouse_x() // self.text_size.x) + 1
         y = int(rl.get_mouse_y() // self.text_size.y) + 1
 
         if rl.is_mouse_button_pressed(rl.MOUSE_LEFT_BUTTON):
-            print(x, y)
             self.mouse_pressed = True
+
+            # This is using SGR mouse codes, which work on some apps and not in others
             self.p_out.write(b"\x1b" + f"[<0;{str(x)};{str(y)}M".encode("utf-8"))
+            # This is "typical" (seems broken)
+            # self.p_out.write(b"\x1b" + f"M{chr(32)}{chr(x)}{chr(y)}".encode("utf-8"))
 
         elif self.mouse_pressed and not rl.is_mouse_button_pressed(
             rl.MOUSE_LEFT_BUTTON
         ):
             self.mouse_pressed = False
+            # This is using SGR mouse codes, which work on some apps and not in others
             self.p_out.write(b"\x1b" + f"[<0;{str(x)};{str(y)}m".encode("utf-8"))
-
+            # This is "typical" (seems broken)
+            # self.p_out.write(b"\x1b" + f"M{chr(35)}{chr(x)}{chr(y)}".encode("utf-8"))
 
     def key_event(self, key, scancode, action, mods):
         """Process one keyboard event.
@@ -194,7 +200,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                 int(self.cursor.y * self.text_size.y),
                 int(self.text_size.x),
                 int(self.text_size.y),
-                (100, 108, 100, 100),
+                (255, 255, 255, 100),
             )
 
     def update(self):
@@ -212,8 +218,10 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                 return
         rl.BeginTextureMode(self.texture)
 
-        if self.last_cursor != (self.cursor.x, self.cursor.y):
-            self.draw_cell(*self.last_cursor)
+        self.draw_cell(*self.last_cursor)
+        self.draw_cell(self.cursor.x, self.cursor.y)
+        if self.dirty:
+            print(self.dirty, self.cursor.x, self.cursor.y)
         for y in self.dirty:
             for x in range(self.columns):  # Can't enumerate, it's sparse
                 self.draw_cell(x, y)

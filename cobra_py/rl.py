@@ -46,7 +46,7 @@ class Screen:
     Also, it has an "event loop" that will make all buffers update and display.
     """
 
-    show_fps = true
+    show_fps = True
 
     def __init__(self, width, height):
         self.width = width
