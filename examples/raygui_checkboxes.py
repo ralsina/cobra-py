@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from cobra_py import rl
 
 sw = 800
