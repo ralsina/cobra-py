@@ -2,8 +2,11 @@ import os
 import pty
 import select
 from pathlib import Path
+from queue import Empty
+from typing import Tuple
 
 import pyte
+from ipcqueue.posixmq import Queue
 
 from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
@@ -56,11 +59,26 @@ class RayTerminal(pyte.HistoryScreen):
         self._init_window()
         self._init_kbd()
         self._spawn_shell()
-        rl.set_window_size(
-            int(self.text_size.x * columns), int(self.text_size.y * rows)
-        )
+        sw = int(self.text_size.x * columns)
+        sh = int(self.text_size.y * rows)
+        rl.set_window_size(sw, sh)
         rl.set_target_fps(fps)
         self.show_fps = show_fps
+        self._buffer = rl.gen_image_color(sw, sh, (255, 0, 0, 0))
+        self._buffer_texture = rl.load_render_texture(sw, sh)
+        rl.BeginTextureMode(self._buffer_texture)
+        rl.ClearBackground((0, 0, 0, 0))
+        rl.EndTextureMode()
+
+        self.command_queue = Queue("/foo")
+
+    def process_commands(self):
+        try:
+            while True:
+                command, a, kw = self.command_queue.get(False)
+                getattr(self, command)(*a, **kw)
+        except Empty:
+            pass
 
     def _init_kbd(self):
         self.keymap = read_xmodmap()
@@ -105,18 +123,13 @@ class RayTerminal(pyte.HistoryScreen):
         :mods: 0 is key release, 1 key press, 2 key repeat
         """
 
-        print("in-scancode=>", key, scancode, action, mods)
-        print(self.keymap[action])
         if mods == 0:  # Key release
             # FIXME: get mod codes from xmodmap
             if action in {37, 105}:  # ctrl
-                print("ctrl-off")
                 self.ctrl = False
             elif action in {50, 62}:  # shift
-                print("shift-off")
                 self.shift = False
             elif action == 108:  # AltGr
-                print("altgr-off")
                 self.alt_gr = False
             return
 
@@ -124,13 +137,10 @@ class RayTerminal(pyte.HistoryScreen):
 
         # Modifiers
         if action == 37:
-            print("ctrl-on")
             self.ctrl = True
         elif action == 50:
-            print("shift-on")
             self.shift = True
         elif action == 108:  # AltGr
-            print("altgr-on")
             self.alt_gr = True
 
         # ctrl-key doesn't repeat
@@ -149,13 +159,13 @@ class RayTerminal(pyte.HistoryScreen):
                     letter = self.keymap[action][2]
                 else:
                     letter = self.keymap[action][0]
-            print("---->", letter)
             self.p_out.write(letter)
 
     def run(self):
         while not rl.window_should_close():
+            self.process_commands()
             rl.begin_drawing()
-            rl.clear_background(rl.DARKBLUE)
+            rl.clear_background(rl.BLACK)
 
             ready, _, _ = select.select([self.p_out], [], [], 0)
             if ready:
@@ -176,7 +186,7 @@ class RayTerminal(pyte.HistoryScreen):
                     else:
                         fg = _colors.get(char.fg, None) or parse_color(char.fg)
                     if char.bg == "default":
-                        bg = rl.BLACK
+                        bg = (0, 0, 0, 0)  # Transparent
                     else:
                         bg = _colors.get(char.bg, None) or parse_color(char.bg)
 
@@ -200,6 +210,19 @@ class RayTerminal(pyte.HistoryScreen):
                     )
             self.dirty.clear()
 
+            # Draw graphics buffer
+            rl.draw_texture_rec(
+                self._buffer_texture.texture,
+                (
+                    0,
+                    0,
+                    self._buffer_texture.texture.width,
+                    -self._buffer_texture.texture.height,
+                ),
+                (0, 0),
+                rl.WHITE,
+            )
+
             # draw cursor
             rl.draw_rectangle(
                 int(self.cursor.x * self.text_size.x),
@@ -211,3 +234,8 @@ class RayTerminal(pyte.HistoryScreen):
             if self.show_fps:
                 rl.draw_fps(10, 10)
             rl.end_drawing()
+
+    def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
+        rl.BeginTextureMode(self._buffer_texture)
+        rl.draw_circle(x, y, int(radius), color)
+        rl.EndTextureMode()

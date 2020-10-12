@@ -5,6 +5,9 @@
 * More "normal" keybindings.
 """
 
+from functools import partial
+
+from ipcqueue.posixmq import Queue
 from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.lexers import PygmentsLexer
@@ -24,8 +27,15 @@ def _(event):
         b.validate_and_handle()
 
 
+command_queue = Queue("/foo")
+
+
+def command(cmdname, *a, **kw):
+    command_queue.put((cmdname, a, kw))
+
+
 _globals = {}
-_locals = {}
+_locals = {"circle": partial(command, "circle")}
 
 
 def _execute(line: str) -> None:
