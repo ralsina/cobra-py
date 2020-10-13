@@ -1,6 +1,7 @@
 import os
 import pty
 import select
+import shutil
 
 import pyte
 from cobra_py import rl
@@ -82,11 +83,12 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
     def _spawn_shell(self, cmd):
         self.stream = pyte.ByteStream(self)
+        cmd_path = shutil.which(cmd)
         p_pid, master_fd = pty.fork()
         if p_pid == 0:  # Child process
             os.execvpe(
-                cmd,
-                [cmd],
+                cmd_path,
+                [cmd_path],
                 env=dict(
                     TERM="xterm",
                     COLUMNS=str(self.columns),
