@@ -12,7 +12,10 @@ def __command(cmdname, *a, **kw):
     __command_queue.put((cmdname, a, kw))
 
 
+functions = {}
+
 # Create a local proxy for each thing exported by the server
 for endpoint in graphics_server.exported:
     client = partial(__command, endpoint)
     locals()[endpoint] = client
+    functions[endpoint] = client

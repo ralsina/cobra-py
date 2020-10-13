@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cobra_py"
-version = "0.0.2"
+version = "0.0.3"
 description = "An 80s style Python runtime and development environment"
 authors = ["Roberto Alsina <roberto.alsina@gmail.com>"]
 license = "MIT"

@@ -41,6 +41,15 @@ def _execute(line: str) -> None:
 
 
 def run():
+    print(
+        """This is a normal Python prompt, except it has graphics.
+
+For example, try
+
+circle(100, 100, 50, (255,0,0,255))
+
+    """
+    )
     session = PromptSession(
         lexer=PygmentsLexer(PythonLexer),
         key_bindings=bindings,
