@@ -8,6 +8,9 @@ repos:
     - id: debug-statements
     - id: end-of-file-fixer
     - id: trailing-whitespace
+-   repo:  https://gitlab.com/pycqa/flake8
+    rev: HEAD
+    hooks:
     - id: flake8
 -   repo: https://github.com/ambv/black
     rev: 19.10b0

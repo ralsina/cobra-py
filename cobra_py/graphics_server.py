@@ -20,19 +20,18 @@ class Server(rl.Layer):
         self.command_queue = Queue("/foo")
 
     def update(self):
+        rl.BeginTextureMode(self.texture)
         try:
             while True:
                 command, a, kw = self.command_queue.get(False)
                 getattr(self, command)(*a, **kw)
         except Empty:
             pass
+        rl.EndTextureMode()
 
     # Below here: things that draw things and whatnot
-
     def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
-        rl.BeginTextureMode(self.texture)
         rl.draw_circle(x, y, int(radius), color)
-        rl.EndTextureMode()
 
 
 exported = tuple(fname for fname in dir(Server) if not fname.startswith("__"))
