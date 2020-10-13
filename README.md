@@ -1,4 +1,4 @@
-Nothing to see here yet, but maybe read [this](https://ralsina.me/weblog/posts/possible-new-project.html)
+Nothing to see here yet, but maybe read [this](https://ralsina.me/weblog/posts/possible-new-project.html) to see where it's aimed at, and [here](http://ralsina.me/categories/cobrapy.html) for posts about what I am doing with it.
 
 
 If you really, really, really want to try this out while it doesn't work:
