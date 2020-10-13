@@ -120,7 +120,7 @@ static GuiTextBoxState guiTextBoxState = {      // Keeps state of the active tex
     .cursor = -1,
     .start = 0,
     .index = 0,
-    .select = -1 
+    .select = -1
 };
 
 //----------------------------------------------------------------------------------
@@ -768,7 +768,7 @@ RAYGUIDEF bool GuiTextBoxEx(Rectangle bounds, char *text, int textSize, bool edi
                 else selStart = selStart - guiTextBoxState.start;
             }
             else state = GUI_STATE_FOCUSED;
-            
+
             if (IsKeyPressed(KEY_ENTER) || (!CheckCollisionPointRec(mousePoint, bounds) && IsMouseButtonPressed(0))) pressed = true;
         }
         else
@@ -795,7 +795,7 @@ RAYGUIDEF bool GuiTextBoxEx(Rectangle bounds, char *text, int textSize, bool edi
                 guiTextBoxState.cursor = cursor;
                 guiTextBoxState.start = start;
             }
-            
+
             if (CheckCollisionPointRec(mousePoint, bounds))
             {
                 state = GUI_STATE_FOCUSED;
@@ -803,7 +803,7 @@ RAYGUIDEF bool GuiTextBoxEx(Rectangle bounds, char *text, int textSize, bool edi
             }
 
         }
-        
+
         if (pressed) framesCounter = 0;
     }
 

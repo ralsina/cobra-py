@@ -5,12 +5,11 @@
 * More "normal" keybindings.
 """
 
+from cobra_py.prompt_utils import document_is_multiline_python
 from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import PythonLexer
-
-from cobra_py.prompt_utils import document_is_multiline_python
 
 bindings = KeyBindings()
 

@@ -11,11 +11,7 @@ while not rl.window_should_close():
     rl.begin_drawing()
     rl.clear_background(rl.RAYWHITE)
     rl.draw_text(
-        b"Congrats! You created your first window!",
-        190,
-        200,
-        20,
-        rl.RED,
+        b"Congrats! You created your first window!", 190, 200, 20, rl.RED,
     )
     rl.end_drawing()
 # Actually you can still use CamelCase, be free

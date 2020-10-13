@@ -2,9 +2,8 @@
 
 from functools import partial
 
-from ipcqueue.posixmq import Queue
-
 from cobra_py import graphics_server
+from ipcqueue.posixmq import Queue
 
 __command_queue = Queue("/foo")
 

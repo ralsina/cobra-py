@@ -3,9 +3,8 @@
 from queue import Empty
 from typing import Tuple
 
-from ipcqueue.posixmq import Queue
-
 from cobra_py import rl
+from ipcqueue.posixmq import Queue
 
 
 class Server(rl.Layer):

@@ -126,7 +126,7 @@ keysyms = {
     "0x0025": "\u0025",  # percent
     "0x0026": "\u0026",  # ampersand
     "0x0027": "\u0027",  # apostrophe
-    "0x0027": "\u0027",  # quoteright	/* deprecated */
+    "0x0027": "\u0027",  # quoteright /* deprecated */
     "0x0028": "\u0028",  # parenleft
     "0x0029": "\u0029",  # parenright
     "0x002a": "\u002a",  # asterisk
@@ -184,7 +184,7 @@ keysyms = {
     "0x005e": "\u005e",  # asciicircum
     "0x005f": "\u005f",  # underscore
     "0x0060": "\u0060",  # grave
-    "0x0060": "\u0060",  # quoteleft	/* deprecated */
+    "0x0060": "\u0060",  # quoteleft /* deprecated */
     "0x0061": "\u0061",  # a
     "0x0062": "\u0062",  # b
     "0x0063": "\u0063",  # c
@@ -226,7 +226,7 @@ keysyms = {
     "0x00a8": "\u00a8",  # diaeresis
     "0x00a9": "\u00a9",  # copyright
     "0x00aa": "\u00aa",  # ordfeminine
-    "0x00ab": "\u00ab",  # guillemotleft	/* left angle quotation mark */
+    "0x00ab": "\u00ab",  # guillemotleft /* left angle quotation mark */
     "0x00ac": "\u00ac",  # notsign
     "0x00ad": "\u00ad",  # hyphen
     "0x00ae": "\u00ae",  # registered
@@ -242,7 +242,7 @@ keysyms = {
     "0x00b8": "\u00b8",  # cedilla
     "0x00b9": "\u00b9",  # onesuperior
     "0x00ba": "\u00ba",  # masculine
-    "0x00bb": "\u00bb",  # guillemotright	/* right angle quotation mark */
+    "0x00bb": "\u00bb",  # guillemotright /* right angle quotation mark */
     "0x00bc": "\u00bc",  # onequarter
     "0x00bd": "\u00bd",  # onehalf
     "0x00be": "\u00be",  # threequarters
@@ -264,7 +264,7 @@ keysyms = {
     "0x00ce": "\u00ce",  # Icircumflex
     "0x00cf": "\u00cf",  # Idiaeresis
     "0x00d0": "\u00d0",  # ETH
-    "0x00d0": "\u00d0",  # Eth	/* deprecated */
+    "0x00d0": "\u00d0",  # Eth /* deprecated */
     "0x00d1": "\u00d1",  # Ntilde
     "0x00d2": "\u00d2",  # Ograve
     "0x00d3": "\u00d3",  # Oacute
@@ -279,7 +279,7 @@ keysyms = {
     "0x00dc": "\u00dc",  # Udiaeresis
     "0x00dd": "\u00dd",  # Yacute
     "0x00de": "\u00de",  # THORN
-    "0x00de": "\u00de",  # Thorn	/* deprecated */
+    "0x00de": "\u00de",  # Thorn /* deprecated */
     "0x00df": "\u00df",  # ssharp
     "0x00e0": "\u00e0",  # agrave
     "0x00e1": "\u00e1",  # aacute
@@ -1237,12 +1237,12 @@ keysyms = {
     "0xfefb": "\u0000",  # Pointer_DfltBtnNext
     "0xfefc": "\u0000",  # Pointer_DfltBtnPrev
     "0xfefd": "\u0000",  # Pointer_Drag5
-    "0xff08": "\u0008",  # BackSpace	/* back space, back char */
+    "0xff08": "\u0008",  # BackSpace /* back space, back char */
     "0xff09": "\u0009",  # Tab
-    "0xff0a": "\u000a",  # Linefeed	/* Linefeed, LF */
+    "0xff0a": "\u000a",  # Linefeed /* Linefeed, LF */
     "0xff0b": "\u000b",  # Clear
-    "0xff0d": "\u000d",  # Return	/* Return, enter */
-    "0xff13": "\u0013",  # Pause	/* Pause, hold */
+    "0xff0d": "\u000d",  # Return /* Return, enter */
+    "0xff13": "\u0013",  # Pause /* Pause, hold */
     "0xff14": "\u0014",  # Scroll_Lock
     "0xff15": "\u0015",  # Sys_Req
     "0xff1b": "\u001b",  # Escape
@@ -1300,9 +1300,9 @@ keysyms = {
     "0xff6b": "\u0000",  # Break
     "0xff7e": "\u0000",  # Mode_switch
     "0xff7f": "\u0000",  # Num_Lock
-    "0xff80": "\u0020",  # KP_Space	/* space */
+    "0xff80": "\u0020",  # KP_Space /* space */
     "0xff89": "\u0009",  # KP_Tab
-    "0xff8d": "\u000d",  # KP_Enter	/* enter */
+    "0xff8d": "\u000d",  # KP_Enter /* enter */
     "0xff91": "\u0000",  # KP_F1
     "0xff92": "\u0000",  # KP_F2
     "0xff93": "\u0000",  # KP_F3
@@ -1320,7 +1320,7 @@ keysyms = {
     "0xff9f": "\u0000",  # KP_Delete
     "0xffaa": "\u002a",  # KP_Multiply
     "0xffab": "\u002b",  # KP_Add
-    "0xffac": "\u002c",  # KP_Separator	/* separator, often comma */
+    "0xffac": "\u002c",  # KP_Separator /* separator, often comma */
     "0xffad": "\u002d",  # KP_Subtract
     "0xffae": "\u002e",  # KP_Decimal
     "0xffaf": "\u002f",  # KP_Divide
@@ -1334,7 +1334,7 @@ keysyms = {
     "0xffb7": "\u0037",  # KP_7
     "0xffb8": "\u0038",  # KP_8
     "0xffb9": "\u0039",  # KP_9
-    "0xffbd": "\u003d",  # KP_Equal	/* equals */
+    "0xffbd": "\u003d",  # KP_Equal /* equals */
     "0xffbe": "\u0000",  # F1
     "0xffbf": "\u0000",  # F2
     "0xffc0": "\u0000",  # F3

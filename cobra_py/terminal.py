@@ -3,7 +3,6 @@ import pty
 import select
 
 import pyte
-
 from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
 from cobra_py.raylib import ffi
@@ -14,9 +13,10 @@ from cobra_py.raylib import ffi
 
 # Codes for ctrl+keys
 
+
 def ctrl_key(char: bytes):
     if 96 < char[0] < 123:
-        return chr(ord(char) & 31).encode('utf8')
+        return chr(ord(char) & 31).encode("utf8")
     return char
 
 
@@ -51,6 +51,10 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
     mouse_pressed = False
     p_out = None
     last_cursor = (-1, -1)
+
+    # Ideally this should change when we get the SGR switch escape sequence
+    # but Pyte doesn't support that yet
+    mouse_enabled = False
 
     def __init__(self, screen, cmd="bash"):
         """Create terminal.
@@ -98,6 +102,8 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         return super().set_margins(*args, **kwargs)
 
     def mouse_event(self):
+        if not self.mouse_enabled:
+            return
         # See https://github.com/prompt-toolkit/python-prompt-toolkit/blob/master/prompt_toolkit/key_binding/bindings/mouse.py#L23
         # For examples of decoding these events we are generating
         x = int(rl.get_mouse_x() // self.text_size.x) + 1
@@ -157,7 +163,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         elif self.ctrl and mods == 1:
             self.p_out.write(ctrl_key(self.keymap[action][0]))
         elif self.alt:
-            self.p_out.write(b'\x1b' + self.keymap[action][0])
+            self.p_out.write(b"\x1b" + self.keymap[action][0])
         else:
             if self.shift:
                 if self.alt_gr:

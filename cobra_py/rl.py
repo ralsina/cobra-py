@@ -1,3 +1,4 @@
+# type: ignore
 """A wrapper to the raylib CFFI binding so that names are snake_case instead of CamelCase"""
 
 import inspect
@@ -78,12 +79,7 @@ class Screen:
             for layer in self.layers:
                 rl.DrawTextureRec(
                     layer.texture.texture,
-                    (
-                        0,
-                        0,
-                        layer.texture.texture.width,
-                        -layer.texture.texture.height,
-                    ),
+                    (0, 0, layer.texture.texture.width, -layer.texture.texture.height,),
                     (0, 0),
                     rl.WHITE,
                 )
@@ -106,7 +102,7 @@ class Layer:
         rl.ClearBackground((0, 0, 0, 0))
         rl.EndTextureMode()
 
-    def update():
+    def update(self):
         """Update the contents of self.buffer as needed.
 
         Try not to take too long.
