@@ -112,29 +112,18 @@ class Screen:
         """
         # FIXME: cook the event more (specifically action)
 
-        if mods == 0:  # Key release
-            # FIXME: get mod codes from xmodmap
+        # FIXME: get mod codes from xmodmap
+        if action in {37, 105, 50, 62, 64, 108}:
+            pressed = mods == 1
             if action in {37, 105}:  # ctrl
-                self.ctrl = False
+                self.ctrl = pressed
             elif action in {50, 62}:  # shift
-                self.shift = False
+                self.shift = pressed
             elif action == 64:  # Alt
-                self.alt = False
+                self.alt = pressed
             elif action == 108:  # AltGr
-                self.alt_gr = False
+                self.altgr = pressed
             return
-
-        # Key press (mods=1) or repeat (mods=2)
-
-        # Modifiers
-        if action in {37, 105}:
-            self.ctrl = True
-        elif action in {50, 62}:
-            self.shift = True
-        elif action == 64:  # Alt
-            self.alt = True
-        elif action == 108:  # AltGr
-            self.alt_gr = True
 
         for layer in self.layers:
             layer.key_event(

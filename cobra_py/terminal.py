@@ -137,6 +137,9 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
     ):
         """Process one keyboard event, convert to terminal-appropriate data and feed to app."""
 
+        if mods == 0:  # key release
+            return
+
         if ctrl and mods == 1:
             self.p_out.write(ctrl_key(self.keymap[action][0]))
         elif alt:
