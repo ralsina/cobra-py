@@ -4,7 +4,6 @@ from cobra_py.keysyms import keysyms
 
 _special_keys = {
     # Keysym : (plain, shifted)
-    "0xff0d": (b"\n", b"\n"),  # Enter
     "0xff09": (b"\t", b"\x1b[[Z"),  # Tab
     "0xff1b": (b"\x1b", b"\x1b"),  # ESC
     "0xff08": (b"\b", b"\b"),  # Backspace
@@ -72,6 +71,5 @@ def read_xmodmap():
     data = subprocess.check_output("xmodmap -pk".split(), encoding="utf-8")
     for line in data.splitlines()[5:]:
         keysyms = line.split()
-
         keys[int(keysyms[0])] = _parsed(keysyms)
     return keys

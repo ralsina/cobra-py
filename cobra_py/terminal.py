@@ -2,6 +2,7 @@ import os
 import pty
 import select
 import shutil
+import shlex
 
 import pyte
 
@@ -81,17 +82,19 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
 
     def _spawn_shell(self, cmd):
         self.stream = pyte.ByteStream(self)
-        cmd_path = shutil.which(cmd)
+        cmd = shlex.split(cmd)
+        cmd_path = shutil.which(cmd[0])
         p_pid, master_fd = pty.fork()
         if p_pid == 0:  # Child process
             os.execvpe(
                 cmd_path,
-                [cmd_path],
+                cmd,
                 env=dict(
                     TERM="xterm",
                     COLUMNS=str(self.columns),
                     LINES=str(self.rows),
                     LC_ALL="en_US.UTF-8",
+                    PATH="/usr/bin:/bin",
                 ),
             )
         self.p_out = os.fdopen(master_fd, "w+b", 0)
@@ -136,26 +139,24 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         altgr: bool,
     ):
         """Process one keyboard event, convert to terminal-appropriate data and feed to app."""
-
         if mods == 0:  # key release
             return
 
-        if ctrl and mods == 1:
-            self.p_out.write(ctrl_key(self.keymap[action][0]))
+        elif ctrl:
+            letter = ctrl_key(self.keymap[action][0])
         elif alt:
-            self.p_out.write(b"\x1b" + self.keymap[action][0])
-        else:
-            if shift:
-                if altgr:
-                    letter = self.keymap[action][3]
-                else:
-                    letter = self.keymap[action][1]
+            letter = b"\x1b" + self.keymap[action][0]
+        elif shift:
+            if altgr:
+                letter = self.keymap[action][3]
             else:
-                if altgr:
-                    letter = self.keymap[action][2]
-                else:
-                    letter = self.keymap[action][0]
-            self.p_out.write(letter)
+                letter = self.keymap[action][1]
+        else:
+            if altgr:
+                letter = self.keymap[action][2]
+            else:
+                letter = self.keymap[action][0]
+        self.p_out.write(letter)
 
     def draw_cell(self, x, y):
         char = self.buffer[y][x]
