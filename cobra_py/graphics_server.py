@@ -3,8 +3,9 @@
 from queue import Empty
 from typing import Tuple
 
-from cobra_py import rl
 from ipcqueue.posixmq import Queue
+
+from cobra_py import rl
 
 
 class Server(rl.Layer):
@@ -18,6 +19,7 @@ class Server(rl.Layer):
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
         self.command_queue = Queue("/foo")
+        self.event_queue = Queue("/bar")
 
     def update(self):
         rl.BeginTextureMode(self.texture)

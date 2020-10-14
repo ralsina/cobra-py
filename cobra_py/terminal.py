@@ -4,9 +4,9 @@ import select
 import shutil
 
 import pyte
+
 from cobra_py import rl
 from cobra_py.kbd_layout import read_xmodmap
-from cobra_py.raylib import ffi
 
 # TODO:
 # * mouse support
@@ -71,8 +71,6 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         pyte.HistoryScreen.__init__(self, self.columns, self.rows)
         self._init_kbd()
         self._spawn_shell(cmd)
-        self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
-        rl.set_key_callback(self.__cb)
 
     def _init_kbd(self):
         self.keymap = read_xmodmap()
@@ -136,6 +134,17 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
         :action: as in glfw (X11 KeyCode)
         :mods: 0 is key release, 1 key press, 2 key repeat
         """
+
+        # FIXME: refactor this in a reasonable way into the screen class
+        # with multiplexing/forwarding for layers that want key events
+        self._screen.layers[-1].event_queue.put(
+            {
+                "key": key,
+                "scancode": scancode,
+                "action": action,
+                "mods": mods,
+            }
+        )
 
         if mods == 0:  # Key release
             # FIXME: get mod codes from xmodmap

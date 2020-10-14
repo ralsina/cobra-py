@@ -15,6 +15,8 @@ def camel_to_snake(name):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
+# In this file we **have** to use the CamelCase raylib identifiers, c'est la vie.
+
 # Doesn't work with CFFI functions (yet!) but hey, it's an idea
 def wrap_bytes(f):
     try:
@@ -60,6 +62,10 @@ class Screen:
         self.text_size = rl.MeasureTextEx(self.font, b"X", self.font.baseSize, 0)
         rl.SetTargetFPS(60)
 
+        # Hook into key events
+        self.__cb = ffi.callback("void(int,int,int,int)")(lambda *a: self.key_event(*a))
+        rl.SetKeyCallback(self.__cb)
+
         self.layers = []
 
     def add_layer(self, layer):
@@ -79,13 +85,23 @@ class Screen:
             for layer in self.layers:
                 rl.DrawTextureRec(
                     layer.texture.texture,
-                    (0, 0, layer.texture.texture.width, -layer.texture.texture.height,),
+                    (
+                        0,
+                        0,
+                        layer.texture.texture.width,
+                        -layer.texture.texture.height,
+                    ),
                     (0, 0),
                     rl.WHITE,
                 )
             if self.show_fps:
                 rl.DrawFPS(10, 10)
             rl.EndDrawing()
+
+    def key_event(self, key, scancode, action, mods):
+        # FIXME: cook the event more, specially shift/ctrl/alt state
+        for layer in self.layers:
+            layer.key_event(key, scancode, action, mods)
 
 
 class Layer:
@@ -106,5 +122,12 @@ class Layer:
         """Update the contents of self.buffer as needed.
 
         Try not to take too long.
+        """
+        pass
+
+    def key_event(self, key, scancode, action, mods):
+        """Keyboard event forwarded from the Screen.
+
+        Implement as needed on each layer.
         """
         pass
