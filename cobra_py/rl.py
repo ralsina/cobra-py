@@ -128,14 +128,15 @@ class Screen:
             return
 
         for layer in self.layers:
-            layer.key_event(
-                action,
-                mods,
-                ctrl=self.ctrl,
-                shift=self.shift,
-                alt=self.alt,
-                altgr=self.altgr,
-            )
+            if layer.enabled:
+                layer.key_event(
+                    action,
+                    mods,
+                    ctrl=self.ctrl,
+                    shift=self.shift,
+                    alt=self.alt,
+                    altgr=self.altgr,
+                )
 
 
 class Layer:
