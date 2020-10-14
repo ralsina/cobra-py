@@ -6,6 +6,7 @@ from typing import Tuple
 from ipcqueue.posixmq import Queue
 
 from cobra_py import rl
+from cobra_py.sprite_layer import SpriteLayer
 
 
 class Server(rl.Layer):
@@ -16,8 +17,10 @@ class Server(rl.Layer):
     * Does something with them
     """
 
-    def __init__(self, *a, **kw):
-        super().__init__(*a, **kw)
+    def __init__(self, screen):
+        super().__init__(screen)
+        self.sprites = SpriteLayer(screen)
+
         self.command_queue = Queue("/foo")
         self.event_queue = Queue("/bar")
 
@@ -31,7 +34,7 @@ class Server(rl.Layer):
         altgr: bool,
     ):
         "Forward key events to the client process via event_queue"
-        self._screen.layers[-1].event_queue.put(
+        self.event_queue.put(
             {
                 "action": action,
                 "mods": mods,
@@ -41,6 +44,14 @@ class Server(rl.Layer):
                 "altgr": altgr,
             }
         )
+
+    def load_sprite(self, name: str, image: str):
+        """Add a sprite to the sprite layer."""
+        self.sprites.load_sprite(name, image.encode("utf8"))
+
+    def move_sprite(self, name: str, x: int, y: int):
+        self.sprites.sprites[name].x = x
+        self.sprites.sprites[name].y = y
 
     def update(self):
         rl.BeginTextureMode(self.texture)
@@ -57,4 +68,9 @@ class Server(rl.Layer):
         rl.draw_circle(x, y, int(radius), color)
 
 
-exported = tuple(fname for fname in dir(Server) if not fname.startswith("__"))
+reserved = {"update", "key_event"}
+exported = tuple(
+    fname
+    for fname in dir(Server)
+    if fname not in reserved and not fname.startswith("__")
+)

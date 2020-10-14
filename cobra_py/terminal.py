@@ -197,10 +197,9 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
             )
 
     def update(self):
-        # Honestly, this could go in a thread and block on select, but who cares
-
         self.mouse_event()
 
+        # Honestly, this could go in a thread and block on select, but who cares
         ready, _, _ = select.select([self.p_out], [], [], 0)
         if ready:
             try:
@@ -209,7 +208,7 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
                     self.stream.feed(data)
             except OSError:  # Program went away
                 return
-        rl.BeginTextureMode(self.texture)
+        rl.begin_texture_mode(self.texture)
 
         self.draw_cell(*self.last_cursor)
         self.draw_cell(self.cursor.x, self.cursor.y)

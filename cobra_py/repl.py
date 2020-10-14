@@ -39,8 +39,9 @@ def _execute(line: str) -> None:
     except SyntaxError:  # Not an expression
         code = compile(line, "INPUT", "exec")
         exec(code, _globals, _locals)
-    except Exception:  # FIXME: give proper error messages
+    except Exception as e:  # FIXME: give proper error messages
         print("ERROR (explanations will be provided later)")
+        print(e)
 
 
 def run():
