@@ -40,7 +40,7 @@ def _execute(line: str) -> None:
         code = compile(line, "INPUT", "exec")
         exec(code, _globals, _locals)
     except Exception:  # FIXME: give proper error messages
-        print("ERROR")
+        print("ERROR (explanations will be provided later)")
 
 
 def run():
