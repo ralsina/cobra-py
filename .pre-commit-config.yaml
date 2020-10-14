@@ -13,7 +13,7 @@ repos:
     hooks:
     - id: flake8
 -   repo: https://github.com/ambv/black
-    rev: 19.10b0
+    rev: 20.8b1
     hooks:
     - id: black
 # -   repo: https://github.com/pre-commit/mirrors-mypy
@@ -24,7 +24,3 @@ repos:
     rev: v1.0.0
     hooks:
     - id: check-poetry
--   repo: https://github.com/doublify/pre-commit-isort
-    rev: v4.3.0
-    hooks:
-    - id: isort
