@@ -17,8 +17,8 @@ class Server(rl.Layer):
     * Does something with them
     """
 
-    def __init__(self, screen):
-        super().__init__(screen)
+    def __init__(self, screen: rl.Screen, enabled: bool = False):
+        super().__init__(screen, enabled=enabled)
         self.sprites = SpriteLayer(screen)
 
         self.command_queue = Queue("/foo")

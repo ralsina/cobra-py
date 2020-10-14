@@ -8,9 +8,10 @@ from cobra_py.terminal import Terminal
 class Cobrapy(Screen):
     def __init__(self):
         super().__init__(800, 600)
-        self.editor = Terminal(self, cmd="micro tasks.py")
         self.term = Terminal(self, cmd="sweepleg")
         self.graphics = Server(self)
+
+        self.editor = Terminal(self, cmd="micro tasks.py", enabled=False)
 
 
 def main():

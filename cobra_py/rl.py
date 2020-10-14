@@ -87,6 +87,8 @@ class Screen:
 
             # Draw all layers
             for layer in self.layers:
+                if not layer.enabled:
+                    continue
                 rl.DrawTextureRec(
                     layer.texture.texture,
                     (
@@ -142,10 +144,13 @@ class Layer:
     Screen will compose these and display them.
     """
 
-    def __init__(self, screen: Screen):
+    enabled: bool = True
+
+    def __init__(self, screen: Screen, enabled: bool = True):
         screen.add_layer(self)
         self.texture = rl.LoadRenderTexture(screen.width, screen.height)
         self._screen = screen
+        self.enabled = enabled
         rl.BeginTextureMode(self.texture)
         rl.ClearBackground((0, 0, 0, 0))
         rl.EndTextureMode()

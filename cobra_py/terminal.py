@@ -58,13 +58,13 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
     # but Pyte doesn't support that yet
     mouse_enabled = False
 
-    def __init__(self, screen, cmd="bash"):
+    def __init__(self, screen: rl.Screen, enabled: bool = True, cmd: str = "bash"):
         """Create terminal.
 
         :cmd: command to run in the terminal.
         """
 
-        rl.Layer.__init__(self, screen)
+        rl.Layer.__init__(self, screen, enabled=enabled)
         self.text_size = screen.text_size
         self.font = screen.font
         self.rows = int(self._screen.height // self.text_size.y)
