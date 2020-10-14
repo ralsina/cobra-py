@@ -5,12 +5,13 @@
 * More "normal" keybindings.
 """
 
-from cobra_py.graphics_client import functions
-from cobra_py.prompt_utils import document_is_multiline_python
 from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import PythonLexer
+
+from cobra_py.graphics_client import functions
+from cobra_py.prompt_utils import document_is_multiline_python
 
 bindings = KeyBindings()
 
@@ -63,7 +64,7 @@ circle(100, 100, 50, (255,0,0,255))
         except KeyboardInterrupt:
             continue
         except EOFError:
-            break
+            continue
         else:
             _execute(text)
     print("EOF")
