@@ -17,12 +17,22 @@ class Server(rl.Layer):
     * Does something with them
     """
 
-    def __init__(self, screen: rl.Screen, enabled: bool = False):
-        super().__init__(screen, enabled=enabled)
+    def __init__(self, screen: rl.Screen, enabled: bool = True):
         self.sprites = SpriteLayer(screen, enabled=enabled)
+        super().__init__(screen, enabled=enabled)
+        self.enabled = enabled
 
         self.command_queue = Queue("/foo")
         self.event_queue = Queue("/bar")
+
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
+        self.sprites.enabled = value
 
     def key_event(
         self,
