@@ -38,6 +38,8 @@ def _execute(line: str) -> None:
     except SyntaxError:  # Not an expression
         code = compile(line, "INPUT", "exec")
         exec(code, _globals, _locals)
+    except Exception:  # FIXME: give proper error messages
+        print("ERROR")
 
 
 def run():
