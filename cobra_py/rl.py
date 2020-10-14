@@ -50,6 +50,10 @@ class Screen:
     """
 
     show_fps = True
+    ctrl = False
+    shift = False
+    alt = False
+    altgr = False
 
     def __init__(self, width, height):
         self.width = width
@@ -99,9 +103,48 @@ class Screen:
             rl.EndDrawing()
 
     def key_event(self, key, scancode, action, mods):
-        # FIXME: cook the event more, specially shift/ctrl/alt state
+        """Process one keyboard event.
+
+        :key: as in glfw
+        :scancode: as in glfw
+        :action: as in glfw (X11 KeyCode)
+        :mods: 0 is key release, 1 key press, 2 key repeat
+        """
+        # FIXME: cook the event more (specifically action)
+
+        if mods == 0:  # Key release
+            # FIXME: get mod codes from xmodmap
+            if action in {37, 105}:  # ctrl
+                self.ctrl = False
+            elif action in {50, 62}:  # shift
+                self.shift = False
+            elif action == 64:  # Alt
+                self.alt = False
+            elif action == 108:  # AltGr
+                self.alt_gr = False
+            return
+
+        # Key press (mods=1) or repeat (mods=2)
+
+        # Modifiers
+        if action in {37, 105}:
+            self.ctrl = True
+        elif action in {50, 62}:
+            self.shift = True
+        elif action == 64:  # Alt
+            self.alt = True
+        elif action == 108:  # AltGr
+            self.alt_gr = True
+
         for layer in self.layers:
-            layer.key_event(key, scancode, action, mods)
+            layer.key_event(
+                action,
+                mods,
+                ctrl=self.ctrl,
+                shift=self.shift,
+                alt=self.alt,
+                altgr=self.altgr,
+            )
 
 
 class Layer:
@@ -125,8 +168,24 @@ class Layer:
         """
         pass
 
-    def key_event(self, key, scancode, action, mods):
+    def key_event(
+        self,
+        action: int,
+        mods: int,
+        ctrl: bool,
+        shift: bool,
+        alt: bool,
+        altgr: bool,
+    ):
         """Keyboard event forwarded from the Screen.
+
+        :action: code identifying the key
+        :mods: 0 is key release, 1 key press, 2 key repeat
+        :ctrl: whether the Ctrl key is pressed
+        :shift: whether the Shift key is pressed
+        :alt: whether the Alt key is pressed
+        :altgr: whether the AltGr key is pressed
+
 
         Implement as needed on each layer.
         """

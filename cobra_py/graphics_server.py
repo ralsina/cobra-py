@@ -21,6 +21,27 @@ class Server(rl.Layer):
         self.command_queue = Queue("/foo")
         self.event_queue = Queue("/bar")
 
+    def key_event(
+        self,
+        action: int,
+        mods: int,
+        ctrl: bool,
+        shift: bool,
+        alt: bool,
+        altgr: bool,
+    ):
+        "Forward key events to the client process via event_queue"
+        self._screen.layers[-1].event_queue.put(
+            {
+                "action": action,
+                "mods": mods,
+                "ctrl": ctrl,
+                "shift": shift,
+                "alt": alt,
+                "altgr": altgr,
+            }
+        )
+
     def update(self):
         rl.BeginTextureMode(self.texture)
         try:

@@ -126,63 +126,29 @@ class Terminal(pyte.HistoryScreen, rl.Layer):
             # This is "typical" (seems broken)
             # self.p_out.write(b"\x1b" + f"M{chr(35)}{chr(x)}{chr(y)}".encode("utf-8"))
 
-    def key_event(self, key, scancode, action, mods):
-        """Process one keyboard event.
+    def key_event(
+        self,
+        action: int,
+        mods: int,
+        ctrl: bool,
+        shift: bool,
+        alt: bool,
+        altgr: bool,
+    ):
+        """Process one keyboard event, convert to terminal-appropriate data and feed to app."""
 
-        :key: as in glfw
-        :scancode: as in glfw
-        :action: as in glfw (X11 KeyCode)
-        :mods: 0 is key release, 1 key press, 2 key repeat
-        """
-
-        # FIXME: refactor this in a reasonable way into the screen class
-        # with multiplexing/forwarding for layers that want key events
-        self._screen.layers[-1].event_queue.put(
-            {
-                "key": key,
-                "scancode": scancode,
-                "action": action,
-                "mods": mods,
-            }
-        )
-
-        if mods == 0:  # Key release
-            # FIXME: get mod codes from xmodmap
-            if action in {37, 105}:  # ctrl
-                self.ctrl = False
-            elif action in {50, 62}:  # shift
-                self.shift = False
-            elif action == 64:  # Alt
-                self.alt = False
-            elif action == 108:  # AltGr
-                self.alt_gr = False
-            return
-
-        # Key press (mods=1) or repeat (mods=2)
-
-        # Modifiers
-        if action in {37, 105}:
-            self.ctrl = True
-        elif action in {50, 62}:
-            self.shift = True
-        elif action == 64:  # Alt
-            self.alt = True
-        elif action == 108:  # AltGr
-            self.alt_gr = True
-
-        # ctrl-key doesn't repeat
-        elif self.ctrl and mods == 1:
+        if ctrl and mods == 1:
             self.p_out.write(ctrl_key(self.keymap[action][0]))
-        elif self.alt:
+        elif alt:
             self.p_out.write(b"\x1b" + self.keymap[action][0])
         else:
-            if self.shift:
-                if self.alt_gr:
+            if shift:
+                if altgr:
                     letter = self.keymap[action][3]
                 else:
                     letter = self.keymap[action][1]
             else:
-                if self.alt_gr:
+                if altgr:
                     letter = self.keymap[action][2]
                 else:
                     letter = self.keymap[action][0]
