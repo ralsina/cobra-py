@@ -19,7 +19,7 @@ class Server(rl.Layer):
 
     def __init__(self, screen: rl.Screen, enabled: bool = False):
         super().__init__(screen, enabled=enabled)
-        self.sprites = SpriteLayer(screen)
+        self.sprites = SpriteLayer(screen, enabled=enabled)
 
         self.command_queue = Queue("/foo")
         self.event_queue = Queue("/bar")
