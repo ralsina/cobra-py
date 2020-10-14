@@ -18,9 +18,8 @@ class Cobrapy(Screen):
 
     def run_program(self):
         """Execute our one and only program, which is being edited."""
-        self.child = subprocess.Popen(
-            ["python", "-m", "cobra_py.graphics_client", "foo.py"]
-        )
+        # FIXME: run it with graphics_client imported
+        self.child = subprocess.Popen(["python", "foo.py"])
 
     def key_event(self, key, scancode, action, mods):
         "Eat F1 / F2 / F3 to switch modes, pass the rest down"
