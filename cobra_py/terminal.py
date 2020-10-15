@@ -1,8 +1,8 @@
 import os
 import pty
 import select
-import shutil
 import shlex
+import shutil
 
 import pyte
 
