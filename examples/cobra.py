@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess
+from multiprocessing import Process
 
 from cobra_py.graphics_server import Server
 from cobra_py.rl import Screen
@@ -18,8 +18,37 @@ class Cobrapy(Screen):
 
     def run_program(self):
         """Execute our one and only program, which is being edited."""
-        # FIXME: run it with graphics_client imported
-        self.child = subprocess.Popen(["python", "foo.py"])
+        if self.child is not None:
+            self.child.kill()
+            self.child = None
+
+        user_code = open("foo.py").read()
+
+        # TODO: analyze user_code
+
+        program = f"""
+from cobra_py.graphics_client import *
+import time
+
+{user_code}
+
+while True:
+    t1 = time.time()
+    gameloop()
+    t2 = time.time()
+    delta = t2 - t1
+    if delta < 1 / 60:
+        time.sleep(1 / 60 - delta)
+        """
+
+        with open("bar.py", "w+") as outf:
+            outf.write(program)
+
+        def run():
+            import bar  # noqa: F401
+
+        self.child = Process(target=run)
+        self.child.start()
 
     def key_event(self, key, scancode, action, mods):
         "Eat F1 / F2 / F3 to switch modes, pass the rest down"
@@ -43,6 +72,7 @@ class Cobrapy(Screen):
         self.graphics.enabled = True
         if self.child:
             self.child.kill()
+            self.child = None
 
     def show_editor(self):
         for layer in self.layers:
@@ -50,12 +80,13 @@ class Cobrapy(Screen):
         self.editor.enabled = True
         if self.child:
             self.child.kill()
+            self.child = None
 
     def show_graphics(self):
         for layer in self.layers:
             layer.enabled = False
         self.graphics.enabled = True
-        # self.run_program()
+        self.run_program()
 
 
 def main():

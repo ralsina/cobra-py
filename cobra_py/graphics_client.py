@@ -39,8 +39,8 @@ functions = {"get_status": get_status}
 # Create a local proxy for each thing exported by the server
 for endpoint in graphics_server.exported:
     client = partial(__command, endpoint)
-    locals()[endpoint] = client
+    globals()[endpoint] = client
     functions[endpoint] = client
 
-t = threading.Thread(target=_event_picker)
+t = threading.Thread(target=_event_picker, daemon=True)
 t.start()

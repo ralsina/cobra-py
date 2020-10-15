@@ -60,6 +60,10 @@ class Server(rl.Layer):
         self.sprites.load_sprite(name, image.encode("utf8"))
 
     def move_sprite(self, name: str, x: int, y: int):
+        if name not in self.sprites.sprites:
+            return
+        x = int(x)
+        y = int(y)
         self.sprites.sprites[name].x = x
         self.sprites.sprites[name].y = y
 
@@ -79,8 +83,8 @@ class Server(rl.Layer):
 
 
 reserved = {"update", "key_event"}
-exported = tuple(
+exported = [
     fname
     for fname in dir(Server)
     if fname not in reserved and not fname.startswith("__")
-)
+]
