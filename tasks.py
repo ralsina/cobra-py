@@ -21,7 +21,7 @@ if os.environ.get("PLATFORM") == "RASPBERRY":
             "dl",
         ],
     )
-    library_dirs = ([lib_dir.as_posix(), "/opt/vc/lib"],)
+    library_dirs = [lib_dir.as_posix(), "/opt/vc/lib"]
     platform = "PLATFORM_RPI"
 else:
     libraries = ["raylib", "X11"]
