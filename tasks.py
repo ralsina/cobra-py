@@ -4,23 +4,20 @@ import pathlib
 import cffi
 from invoke import task
 
-
 includes = pathlib.Path().absolute() / "include"
 lib_dir = pathlib.Path().absolute() / "raylib" / "src"
 
 if os.environ.get("PLATFORM") == "RASPBERRY":
-    libraries = (
-        [
-            "raylib",
-            "brcmGLESv2",
-            "brcmEGL",
-            "pthread",
-            "rt",
-            "m",
-            "bcm_host",
-            "dl",
-        ],
-    )
+    libraries = [
+        "raylib",
+        "brcmGLESv2",
+        "brcmEGL",
+        "pthread",
+        "rt",
+        "m",
+        "bcm_host",
+        "dl",
+    ]
     library_dirs = [lib_dir.as_posix(), "/opt/vc/lib"]
     platform = "PLATFORM_RPI"
 else:
