@@ -24,7 +24,13 @@ class Server(rl.Layer):
         self.enabled = enabled
 
         self.command_queue = Queue("/foo")
+        self.result_queue = Queue("/bar")
         self.event_queues = []
+
+        self.sounds = {}
+        self.musics = {}
+        self.music_playing = None
+        rl.init_audio_device()
 
     def get_key_events(self) -> Queue:
         q_id = "/" + uuid.uuid4().hex
@@ -50,6 +56,7 @@ class Server(rl.Layer):
         altgr: bool,
     ):
         "Forward key events to the client process via event_queue"
+        # print("key->", action)
         for q in self.event_queues:
             q.put_nowait(
                 {
@@ -67,6 +74,7 @@ class Server(rl.Layer):
         self.sprites.load_sprite(name, image.encode("utf8"))
 
     def move_sprite(self, name: str, x: int, y: int):
+        # FIXME move error check into Sprites
         if name not in self.sprites.sprites:
             return
         x = int(x)
@@ -74,12 +82,23 @@ class Server(rl.Layer):
         self.sprites.sprites[name].x = x
         self.sprites.sprites[name].y = y
 
+    def r_check_collision(self, s1: str, s2: str) -> bool:
+        return self.sprites.check_collision(s1, s2)
+
     def update(self):
+        if self.music_playing:
+            rl.update_music_stream(self.musics[self.music_playing])
         rl.BeginTextureMode(self.texture)
         try:
             while True:
                 command, a, kw = self.command_queue.get(False)
-                getattr(self, command)(*a, **kw)
+                fn = getattr(self, command, None)
+                if fn is None:
+                    print("Unknown command:", command)
+                    continue
+                result = fn(*a, **kw)
+                if command.startswith("r_"):  # Things that return values
+                    self.result_queue.put(result)
         except Empty:
             pass
         rl.EndTextureMode()
@@ -87,6 +106,19 @@ class Server(rl.Layer):
     # Below here: things that draw things and whatnot
     def circle(self, x: int, y: int, radius: int, color: Tuple[int, int, int, int]):
         rl.draw_circle(x, y, int(radius), color)
+
+    def load_sound(self, name, path):
+        self.sounds[name] = rl.load_sound(path.encode("utf-8"))
+
+    def play_sound(self, name):
+        rl.play_sound(self.sounds[name])
+
+    def load_music_stream(self, name, path):
+        self.musics[name] = rl.load_music_stream(path.encode("utf-8"))
+
+    def play_music_stream(self, name):
+        rl.play_music_stream(self.musics[name])
+        self.music_playing = name
 
 
 reserved = {"update", "key_event"}

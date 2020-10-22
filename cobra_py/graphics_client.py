@@ -9,6 +9,7 @@ from ipcqueue.posixmq import Queue
 from cobra_py import graphics_server
 
 __command_queue = Queue("/foo")
+__result_queue = Queue("/bar")
 
 input_lock = threading.Lock()
 __is_pressed = defaultdict(lambda: False)
@@ -45,10 +46,20 @@ def __command(cmdname, *a, **kw):
     __command_queue.put((cmdname, a, kw))
 
 
+def __command_with_response(cmdname, *a, **kw):
+    __command_queue.put((cmdname, a, kw))
+    return __result_queue.get()
+
+
 functions = {"is_pressed": is_pressed}
 
 # Create a local proxy for each thing exported by the server
 for endpoint in graphics_server.exported:
-    client = partial(__command, endpoint)
-    globals()[endpoint] = client
-    functions[endpoint] = client
+    if endpoint.startswith("r_"):
+        client = partial(__command_with_response, endpoint)
+        globals()[endpoint[2:]] = client
+        functions[endpoint[2:]] = client
+    else:
+        client = partial(__command, endpoint)
+        globals()[endpoint] = client
+        functions[endpoint] = client

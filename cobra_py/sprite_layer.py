@@ -11,6 +11,11 @@ class Sprite:
     y: int = 200
     texture: Any = None
 
+    def rect(self):
+        if not self.texture:
+            return (0, 0, 0, 0)
+        return (self.x, self.y, self.texture.width, self.texture.height)
+
 
 class SpriteLayer(rl.Layer):
     """A layer for named sprites.
@@ -35,6 +40,15 @@ class SpriteLayer(rl.Layer):
         """
         texture = rl.load_texture(image)
         self.sprites[name] = Sprite(name=name, texture=texture)
+
+    def check_collision(self, _s1: str, _s2: str):
+        """Check if sprites _s1 and _s2 collide."""
+        if _s1 not in self.sprites or _s2 not in self.sprites:
+            print("???", _s1, _s2, self.sprites)
+            return False
+        s1 = self.sprites[_s1]
+        s2 = self.sprites[_s2]
+        return rl.check_collision_recs(s1.rect(), s2.rect())
 
     def update(self):
         rl.begin_texture_mode(self.texture)
