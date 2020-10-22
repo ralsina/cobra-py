@@ -27,6 +27,7 @@ class SpriteLayer(rl.Layer):
         super().__init__(*a, **kw)
 
         self.sprites = {}
+        self.textures = {}
 
     def load_sprite(self, name: str, image: bytes):
         """Load image, create a sprite, call it name.
@@ -38,8 +39,9 @@ class SpriteLayer(rl.Layer):
         :name: Name of the sprite.
         :image: Path to the image to display.
         """
-        texture = rl.load_texture(image)
-        self.sprites[name] = Sprite(name=name, texture=texture)
+        if image not in self.textures:
+            self.textures[image] = rl.load_texture(image)
+        self.sprites[name] = Sprite(name=name, texture=self.textures[image])
 
     def check_collision(self, _s1: str, _s2: str):
         """Check if sprites _s1 and _s2 collide."""
