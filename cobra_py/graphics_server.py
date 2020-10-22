@@ -1,5 +1,6 @@
 """Server for the CobraPy graphics protocol."""
 
+import uuid
 from queue import Empty
 from typing import Tuple
 
@@ -23,7 +24,12 @@ class Server(rl.Layer):
         self.enabled = enabled
 
         self.command_queue = Queue("/foo")
-        self.event_queue = Queue("/bar_event")
+        self.event_queues = []
+
+    def get_key_events(self) -> Queue:
+        q_id = "/" + uuid.uuid4().hex
+        self.event_queues.append(Queue(q_id))
+        return q_id
 
     @property
     def enabled(self):
@@ -44,16 +50,17 @@ class Server(rl.Layer):
         altgr: bool,
     ):
         "Forward key events to the client process via event_queue"
-        self.event_queue.put(
-            {
-                "action": action,
-                "mods": mods,
-                "ctrl": ctrl,
-                "shift": shift,
-                "alt": alt,
-                "altgr": altgr,
-            }
-        )
+        for q in self.event_queues:
+            q.put_nowait(
+                {
+                    "action": action,
+                    "mods": mods,
+                    "ctrl": ctrl,
+                    "shift": shift,
+                    "alt": alt,
+                    "altgr": altgr,
+                }
+            )
 
     def load_sprite(self, name: str, image: str):
         """Add a sprite to the sprite layer."""

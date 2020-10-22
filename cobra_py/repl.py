@@ -10,7 +10,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.lexers import PygmentsLexer
 from pygments.lexers import PythonLexer
 
-# from cobra_py.graphics_client import functions
+from cobra_py.graphics_client import functions
 from cobra_py.prompt_utils import document_is_multiline_python
 
 bindings = KeyBindings()
@@ -28,7 +28,7 @@ def _(event):
 _globals = {}
 _locals = {}
 
-# _locals.update(functions)
+_locals.update(functions)
 
 
 def _execute(line: str) -> None:

@@ -23,12 +23,15 @@ class Cobrapy(Screen):
             self.child = None
 
         user_code = open("foo.py").read()
+        q_id = self.graphics.get_key_events()
 
         # TODO: analyze user_code
 
         program = f"""
 from cobra_py.graphics_client import *
 import time
+
+kbd_init("{q_id}")
 
 {user_code}
 
@@ -52,16 +55,16 @@ while True:
 
     def key_event(self, key, scancode, action, mods):
         "Eat F1 / F2 / F3 to switch modes, pass the rest down"
-
-        if action == 67:  # F1
-            self.show_prompt()
-            return
-        elif action == 68:  # F2
-            self.show_editor()
-            return
-        elif action == 69:  # F2
-            self.show_graphics()
-            return
+        if mods == 0:  # Only do this when releasing the key
+            if action == 67:  # F1
+                self.show_prompt()
+                return
+            elif action == 68:  # F2
+                self.show_editor()
+                return
+            elif action == 69:  # F3
+                self.show_graphics()
+                return
 
         super().key_event(key, scancode, action, mods)
 
