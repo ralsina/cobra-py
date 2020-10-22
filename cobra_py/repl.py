@@ -15,6 +15,9 @@ from cobra_py.prompt_utils import document_is_multiline_python
 
 bindings = KeyBindings()
 
+# TODO: figure out how to get the graphics_server key events in
+# here so is_pressed() works
+
 
 @bindings.add("enter")
 def _(event):
