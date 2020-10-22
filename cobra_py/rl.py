@@ -113,7 +113,6 @@ class Screen:
         :mods: 0 is key release, 1 key press, 2 key repeat
         """
         # FIXME: cook the event more (specifically action)
-
         # FIXME: get mod codes from xmodmap
         if action in {37, 105, 50, 62, 64, 108}:
             pressed = mods == 1

@@ -23,7 +23,7 @@ class Server(rl.Layer):
         self.enabled = enabled
 
         self.command_queue = Queue("/foo")
-        self.event_queue = Queue("/bar")
+        self.event_queue = Queue("/bar_event")
 
     @property
     def enabled(self):
